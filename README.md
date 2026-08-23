@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Small Batch Bourbon — smallbatchbourbon.com
 
-## Getting Started
+Milestone 1 of the Validation MVP: the production landing page, design system,
+21+ compliance shell, Weekly Pour capture, analytics conventions and SEO
+foundation described in `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 
-First, run the development server:
+**Drink Smarter. Ignore the Noise.**
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · deployed on Vercel.
+Supabase, the admin CMS and the bottle data model arrive in Milestone 2.
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The site runs at http://localhost:3000 (this repo's checked-in preview config
+uses port 3100 to stay clear of other local projects).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Canonical URLs, Open Graph, sitemap |
+| `BEEHIIV_API_KEY` | For live signup | Newsletter provider auth |
+| `BEEHIIV_PUBLICATION_ID` | For live signup | Target publication |
+| `NEXT_PUBLIC_GA_ID` | No | GA4; script only loads when set |
+| `NEXT_PUBLIC_CLARITY_ID` | No | Microsoft Clarity; only loads when set |
 
-## Learn More
+Without the Beehiiv credentials the signup endpoint returns an honest provider
+error rather than pretending a subscription succeeded. Nothing silently drops a
+subscriber.
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Age gate** — `src/components/AgeGate.tsx` plus a pre-paint bootstrap script
+  (`src/lib/age-gate.ts`) inlined in `<head>`. The gate markup ships in the HTML
+  and is dismissed before first paint for returning visitors, so every page stays
+  statically generated and there is no flash of the gate. Acknowledgement lives in
+  a first-party `sbb_age_ok` cookie for 365 days. The gate is audience screening
+  only — licensed retailers remain responsible for transactional age verification.
+- **Newsletter** — the provider is isolated behind `src/lib/newsletter.ts`. Swap
+  Beehiiv without touching routes or components. `/api/newsletter` validates
+  input, rate-limits per IP, and carries a honeypot field.
+- **Analytics** — `track()` in `src/lib/analytics.ts` emits the PRD §21.1 business
+  event names to the GA4 dataLayer. Events are named in one place so Milestones
+  2–6 extend rather than reinvent them.
+- **Design tokens** — `src/app/globals.css`. The palette, type scale and verdict
+  ladder colors are the foundation for the whole application, not just this page.
+- **Security headers** — `next.config.ts`. HSTS and `upgrade-insecure-requests`
+  apply in production only; `'unsafe-eval'` is dev-only.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Known follow-ups before public launch
 
-## Deploy on Vercel
+1. **Legal copy needs review.** The policy pages are complete, accurate drafts
+   written against what the site actually does — have counsel review them for the
+   jurisdictions and affiliate programs you actually use before promoting.
+2. **Replace the demo bottle.** The What We'd Pay preview on the landing page uses
+   a deliberately fictional "Example Bourbon", labeled *Example only / Not live
+   data*. Swap in a real published bottle record after Milestone 3. Never publish
+   an invented MSRP or verdict for a real product.
+3. **Newsletter credentials.** Create the Beehiiv publication, add the keys, and
+   confirm a live subscription lands with the right source tag.
+4. **Logo and hero imagery.** The wordmark in `src/components/Wordmark.tsx` is a
+   typographic placeholder. Hero treatment is currently CSS-only — no stock
+   photography has been invented or licensed.
+5. **CSP hardening.** Move to nonce- or hash-based `script-src` when the app takes
+   on dynamic rendering.
+6. **Rate limiting** is in-process. Move to a shared store before running on more
+   than one instance.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev     # development server
+npm run build   # production build
+npm run start   # serve the production build
+npm run lint    # eslint
+```
