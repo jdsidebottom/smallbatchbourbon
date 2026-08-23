@@ -3,6 +3,7 @@ import { Fraunces, Inter } from "next/font/google";
 import { AgeGate } from "@/components/AgeGate";
 import { Analytics } from "@/components/Analytics";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PublicShell } from "@/components/PublicShell";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AGE_GATE_BOOTSTRAP } from "@/lib/age-gate";
 import { site } from "@/lib/site";
@@ -70,10 +71,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter />
-        <AgeGate />
+        <PublicShell header={<SiteHeader />} footer={<SiteFooter />} gate={<AgeGate />}>
+          {children}
+        </PublicShell>
         <Analytics />
       </body>
     </html>
