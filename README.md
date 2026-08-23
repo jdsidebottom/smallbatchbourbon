@@ -9,8 +9,8 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 | --- | --- | --- |
 | M1 | Design system, 21+ gate, landing page, Weekly Pour, legal shell, analytics, SEO | Done |
 | M2 | Supabase schema/RLS, admin auth, bottle CRUD, media, sources, What We'd Pay thresholds, completeness | Done |
-| M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Next |
-| M4 | `/what-wed-pay` search and Liquor Store Mode | — |
+| M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
+| M4 | `/what-wed-pay` search and Liquor Store Mode | Next |
 | M5 | Buying-guide builder, Gear/Learn article types, internal linking | — |
 | M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | — |
 
@@ -73,6 +73,14 @@ psql "$DATABASE_URL" -v email="'you@example.com'" -f supabase/seed/promote_admin
 Roles are `admin`, `editor` and `contributor`, checked server-side on every
 request by `requireAdmin()` in `src/lib/auth.ts`.
 
+### Demo seed
+
+`supabase/seed/demo_bottle.sql` creates a set of **fictional** bottles, a
+retailer and a draft record, for exercising the bottle page, search,
+alternatives and the affiliate redirect locally. It exists so that no real
+product ever gets an invented price or verdict. Local and preview only — remove
+it with `demo_bottle_teardown.sql`.
+
 ### Security tests
 
 ```bash
@@ -111,6 +119,15 @@ non-production database.
   IEEE 754 and would round to the wrong cent.
 - **Newsletter** — provider isolated behind `src/lib/newsletter.ts`.
   `/api/newsletter` validates input, rate-limits per IP, and carries a honeypot.
+- **Affiliate redirects** — `/go/{merchant}/{bottle}` resolves the destination
+  from the database by slug. There is no `?url=` parameter, so there is no open
+  redirect; the worst a crafted request can do is 404. Both merchant and bottle
+  must be active and published, so deactivating a merchant kills its links
+  site-wide at once. Click logging records no IP, no user agent, and only a
+  same-origin pathname.
+- **Search** — a trigger-maintained tsvector (which includes the brand name, so
+  "Weller" finds every Weller bottle) plus a trigram index on the name for
+  prefix and near-miss autocomplete.
 - **Analytics** — `track()` in `src/lib/analytics.ts` emits the PRD §21.1 business
   event names to the GA4 dataLayer.
 - **Security headers** — `next.config.ts`. HSTS and `upgrade-insecure-requests`

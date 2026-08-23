@@ -19,3 +19,17 @@ export function createAdminClient() {
     },
   );
 }
+
+/**
+ * Non-throwing variant for public request paths.
+ *
+ * The admin pages want a loud failure when configuration is missing, but a
+ * public route must not answer a visitor with a 500 because of it. Callers
+ * treat null as "this cannot be served" and respond accordingly.
+ */
+export function tryCreateAdminClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return null;
+  }
+  return createAdminClient();
+}

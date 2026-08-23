@@ -7,9 +7,10 @@ import { NextResponse, type NextRequest } from "next/server";
  *
  * This is a convenience, not the security boundary. Every admin page and action
  * independently calls `requireAdmin()`, which re-checks the session and the
- * role against the database.
+ * role against the database — which matters all the more here, because Proxy is
+ * meant to run detached from render code and can be deployed to a CDN edge.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

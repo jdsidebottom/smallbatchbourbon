@@ -11,6 +11,7 @@ import { track } from "@/lib/analytics";
  * navigation links.
  */
 const NAV = [
+  { label: "Bourbon", href: "/bourbon" },
   { label: "What We'd Pay", href: "/#what-wed-pay" },
   { label: "Find My Next Pour", href: "/#find-my-next-pour", note: "Coming soon" },
   { label: "Liquor Store Mode", href: "/#liquor-aisle", note: "Coming soon" },
