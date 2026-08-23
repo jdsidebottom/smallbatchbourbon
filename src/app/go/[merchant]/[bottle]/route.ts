@@ -68,7 +68,11 @@ export async function GET(
 
   const response = NextResponse.redirect(destination, { status: 302 });
   response.headers.set("Cache-Control", "no-store");
-  // Don't hand the merchant our full referring URL.
-  response.headers.set("Referrer-Policy", "no-referrer");
+
+  // Referrer-Policy is deliberately not set here: the site-wide
+  // `strict-origin-when-cross-origin` from next.config.ts already takes effect
+  // and wins over anything set on this response, so the merchant receives our
+  // origin and never the full referring URL. Setting it here would be dead code
+  // that reads as though it were doing the work.
   return response;
 }

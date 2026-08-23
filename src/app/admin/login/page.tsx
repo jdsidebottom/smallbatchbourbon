@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/admin/LoginForm";
+import { safeAdminRedirect } from "@/lib/domain/redirect";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -7,8 +8,7 @@ export default async function AdminLoginPage({
 }) {
   const { next } = await searchParams;
 
-  // Only same-site paths are accepted, so ?next= cannot be used as an open redirect.
-  const safeNext = next && /^\/admin(\/|$)/.test(next) ? next : "/admin";
+  const safeNext = safeAdminRedirect(next);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-5 py-16">
