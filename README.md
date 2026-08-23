@@ -1,57 +1,118 @@
 # Small Batch Bourbon — smallbatchbourbon.com
 
-Milestone 1 of the Validation MVP: the production landing page, design system,
-21+ compliance shell, Weekly Pour capture, analytics conventions and SEO
-foundation described in `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
+Mobile-first bourbon discovery, value intelligence and commerce platform, built
+to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 
 **Drink Smarter. Ignore the Noise.**
 
+| Milestone | Scope | Status |
+| --- | --- | --- |
+| M1 | Design system, 21+ gate, landing page, Weekly Pour, legal shell, analytics, SEO | Done |
+| M2 | Supabase schema/RLS, admin auth, bottle CRUD, media, sources, What We'd Pay thresholds, completeness | Done |
+| M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Next |
+| M4 | `/what-wed-pay` search and Liquor Store Mode | — |
+| M5 | Buying-guide builder, Gear/Learn article types, internal linking | — |
+| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | — |
+
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · deployed on Vercel.
-Supabase, the admin CMS and the bottle data model arrive in Milestone 2.
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth,
+Storage) · Vercel.
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local
-npm run dev
 ```
 
-The site runs at http://localhost:3000 (this repo's checked-in preview config
-uses port 3100 to stay clear of other local projects).
+Then copy `.env.example` to `.env.local` and fill it in (see below), and:
+
+```bash
+npm run dev
+```
 
 ## Environment variables
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Yes | Canonical URLs, Open Graph, sitemap |
+| `NEXT_PUBLIC_SUPABASE_URL` | For admin | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | For admin | Browser-safe key; always subject to RLS |
+| `SUPABASE_SERVICE_ROLE_KEY` | For admin | Server-only. Bypasses RLS |
 | `BEEHIIV_API_KEY` | For live signup | Newsletter provider auth |
 | `BEEHIIV_PUBLICATION_ID` | For live signup | Target publication |
 | `NEXT_PUBLIC_GA_ID` | No | GA4; script only loads when set |
 | `NEXT_PUBLIC_CLARITY_ID` | No | Microsoft Clarity; only loads when set |
 
+The service-role key bypasses Row Level Security. It must never appear in a
+`NEXT_PUBLIC_` variable and never reach the browser. `src/lib/supabase/admin.ts`
+imports `server-only`, so pulling it into a client component is a build error
+rather than a silent leak.
+
 Without the Beehiiv credentials the signup endpoint returns an honest provider
-error rather than pretending a subscription succeeded. Nothing silently drops a
-subscriber.
+error rather than pretending a subscription succeeded. Without Supabase, `/admin`
+explains what is missing instead of throwing.
+
+## Database
+
+Migrations in `supabase/migrations` are version controlled and applied in order.
+
+```bash
+supabase db push
+```
+
+### Granting editorial access
+
+The application has no sign-up path by design. Create the account in the Supabase
+dashboard (Authentication → Users → Add user), then grant it a role:
+
+```bash
+psql "$DATABASE_URL" -v email="'you@example.com'" -f supabase/seed/promote_admin.sql
+```
+
+Roles are `admin`, `editor` and `contributor`, checked server-side on every
+request by `requireAdmin()` in `src/lib/auth.ts`.
+
+### Security tests
+
+```bash
+psql "$DATABASE_URL" -f supabase/tests/rls_probe.sql
+```
+
+Seeds a published bottle, a draft, and an affiliate destination, then asserts
+that the `anon` role cannot see drafts, cannot read `destination_url`, `sources`,
+`audit_log` or `admin_users`, and cannot insert, update or delete editorial data.
+The script rolls back, so it leaves nothing behind. Run it against a
+non-production database.
 
 ## Architecture notes
 
 - **Age gate** — `src/components/AgeGate.tsx` plus a pre-paint bootstrap script
   (`src/lib/age-gate.ts`) inlined in `<head>`. The gate markup ships in the HTML
-  and is dismissed before first paint for returning visitors, so every page stays
-  statically generated and there is no flash of the gate. Acknowledgement lives in
-  a first-party `sbb_age_ok` cookie for 365 days. The gate is audience screening
-  only — licensed retailers remain responsible for transactional age verification.
-- **Newsletter** — the provider is isolated behind `src/lib/newsletter.ts`. Swap
-  Beehiiv without touching routes or components. `/api/newsletter` validates
-  input, rate-limits per IP, and carries a honeypot field.
+  and is dismissed before first paint for returning visitors, so public pages
+  stay statically generated with no flash of the gate. Acknowledgement lives in a
+  first-party `sbb_age_ok` cookie for 365 days. Audience screening only —
+  licensed retailers remain responsible for transactional age verification.
+- **RLS** — deny by default. Anonymous access is limited to published rows by
+  policy, and to safe columns by explicit `GRANT`, because RLS gates rows and not
+  columns. `bottle_retailers.destination_url` is deliberately never granted: the
+  public site links to an internal redirect route and the real destination is
+  resolved server-side, so an affiliate URL can never be supplied or rewritten by
+  a client.
+- **Authorization** — `requireAdmin()` runs server-side on every admin page and
+  action, reading the role from the database rather than a JWT claim, so revoking
+  access takes effect immediately. Hiding a UI control is not authorization.
+- **Completeness gating** — `src/lib/domain/completeness.ts` blocks publishing a
+  bottle that cannot be published honestly (no price ladder, no verdict
+  explanation, no cited source, an image without alt text). Facts a producer
+  refuses to disclose are never counted as missing data.
+- **Money** — integer cents throughout. `dollarsToCents` shifts the decimal on
+  the string rather than multiplying, because `1.005 * 100` is 100.4999… in
+  IEEE 754 and would round to the wrong cent.
+- **Newsletter** — provider isolated behind `src/lib/newsletter.ts`.
+  `/api/newsletter` validates input, rate-limits per IP, and carries a honeypot.
 - **Analytics** — `track()` in `src/lib/analytics.ts` emits the PRD §21.1 business
-  event names to the GA4 dataLayer. Events are named in one place so Milestones
-  2–6 extend rather than reinvent them.
-- **Design tokens** — `src/app/globals.css`. The palette, type scale and verdict
-  ladder colors are the foundation for the whole application, not just this page.
+  event names to the GA4 dataLayer.
 - **Security headers** — `next.config.ts`. HSTS and `upgrade-insecure-requests`
   apply in production only; `'unsafe-eval'` is dev-only.
 
@@ -59,20 +120,22 @@ subscriber.
 
 1. **Legal copy needs review.** The policy pages are complete, accurate drafts
    written against what the site actually does — have counsel review them for the
-   jurisdictions and affiliate programs you actually use before promoting.
+   jurisdictions and affiliate programs you actually use.
 2. **Replace the demo bottle.** The What We'd Pay preview on the landing page uses
    a deliberately fictional "Example Bourbon", labeled *Example only / Not live
-   data*. Swap in a real published bottle record after Milestone 3. Never publish
-   an invented MSRP or verdict for a real product.
+   data*. Swap in a real published bottle record once M3 ships. Never publish an
+   invented MSRP or verdict for a real product.
 3. **Newsletter credentials.** Create the Beehiiv publication, add the keys, and
    confirm a live subscription lands with the right source tag.
 4. **Logo and hero imagery.** The wordmark in `src/components/Wordmark.tsx` is a
-   typographic placeholder. Hero treatment is currently CSS-only — no stock
-   photography has been invented or licensed.
+   typographic placeholder. Hero treatment is CSS-only — no stock photography has
+   been invented or licensed.
 5. **CSP hardening.** Move to nonce- or hash-based `script-src` when the app takes
    on dynamic rendering.
 6. **Rate limiting** is in-process. Move to a shared store before running on more
    than one instance.
+7. **Backup and restore** procedure needs documenting before material production
+   editorial data accumulates (M6).
 
 ## Scripts
 
@@ -81,4 +144,5 @@ npm run dev     # development server
 npm run build   # production build
 npm run start   # serve the production build
 npm run lint    # eslint
+npm run test    # vitest
 ```
