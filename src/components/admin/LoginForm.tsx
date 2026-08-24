@@ -10,6 +10,7 @@ export function LoginForm({ next }: { next: string }) {
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reveal, setReveal] = useState(false);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -23,8 +24,15 @@ export function LoginForm({ next }: { next: string }) {
     });
 
     if (signInError) {
-      // Deliberately generic: never reveal whether an address has an account.
-      setError("Those credentials weren't accepted.");
+      // Deliberately generic in production: never reveal whether an address has
+      // an account. In development the real provider message is shown, because
+      // "wrong password" and "project misconfigured" are otherwise
+      // indistinguishable while setting the site up.
+      setError(
+        process.env.NODE_ENV === "development"
+          ? `${signInError.message} (${signInError.code ?? signInError.status ?? "no code"})`
+          : "Those credentials weren't accepted.",
+      );
       setPending(false);
       return;
     }
@@ -57,15 +65,33 @@ export function LoginForm({ next }: { next: string }) {
         >
           Password
         </label>
-        <input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 min-h-12 w-full rounded-lg border border-ink-line bg-ink-card px-4 text-[16px] text-cream focus:border-amber"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            type={reveal ? "text" : "password"}
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="mt-2 min-h-12 w-full rounded-lg border border-ink-line bg-ink-card px-4 pr-20 text-[16px] text-cream focus:border-amber"
+          />
+          <button
+            type="button"
+            onClick={() => setReveal((value) => !value)}
+            aria-pressed={reveal}
+            className="absolute top-2 right-1 min-h-12 px-3 text-xs tracking-[0.1em] text-cream-muted uppercase transition hover:text-amber"
+          >
+            {reveal ? "Hide" : "Show"}
+          </button>
+        </div>
+        {password.length > 0 && (
+          <p className="mt-1.5 text-xs text-cream-muted">
+            {password.length} characters
+            {password !== password.trim() && (
+              <span className="text-verdict-maybe"> · has a leading or trailing space</span>
+            )}
+          </p>
+        )}
       </div>
 
       {error && (
