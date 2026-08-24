@@ -43,6 +43,7 @@ export type PublicBottleSummary = {
     buy_max_cents: number;
     fair_max_cents: number;
     maybe_max_cents: number;
+    editorial_note?: string | null;
   } | null;
 };
 
@@ -206,7 +207,7 @@ export async function listPublishedBottles(): Promise<PublicBottleSummary[]> {
     .select(
       `id, slug, name, classification, proof, image_path, image_alt,
        brands ( name, slug, parent_company ),
-       bottle_prices ( msrp_cents, steal_max_cents, buy_max_cents, fair_max_cents, maybe_max_cents )`,
+       bottle_prices ( msrp_cents, steal_max_cents, buy_max_cents, fair_max_cents, maybe_max_cents, editorial_note )`,
     )
     .order("name");
 
@@ -241,7 +242,7 @@ export async function searchBottles(query: string, limit = 8): Promise<PublicBot
   const columns = `
     id, slug, name, classification, proof, image_path, image_alt,
     brands ( name, slug, parent_company ),
-    bottle_prices ( msrp_cents, steal_max_cents, buy_max_cents, fair_max_cents, maybe_max_cents )
+    bottle_prices ( msrp_cents, steal_max_cents, buy_max_cents, fair_max_cents, maybe_max_cents, editorial_note )
   `;
 
   const shape = (rows: unknown[]): PublicBottleSummary[] =>

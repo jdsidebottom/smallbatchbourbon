@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { HeroCta } from "@/components/HeroCta";
 import { InterestButton } from "@/components/InterestButton";
 import { NewsletterForm } from "@/components/NewsletterForm";
@@ -81,9 +82,12 @@ export default function HomePage() {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <HeroCta />
-            <InterestButton feature="Liquor Store Mode" placement="hero" targetId="liquor-aisle">
+            <Link
+              href="/at-the-store"
+              className="inline-flex min-h-[3.25rem] items-center justify-center rounded-full border border-ink-line px-8 text-sm font-semibold tracking-[0.12em] text-cream uppercase transition hover:border-amber hover:text-amber"
+            >
               At the store?
-            </InterestButton>
+            </Link>
           </div>
 
           <ul className="mt-14 grid gap-x-8 gap-y-4 border-t border-ink-line pt-8 text-sm text-cream-muted sm:grid-cols-3">
@@ -115,9 +119,12 @@ export default function HomePage() {
                 charging tonight.
               </p>
               <div className="mt-8">
-                <InterestButton feature="What We'd Pay search" placement="what_wed_pay_section">
-                  Tell me when it&apos;s live
-                </InterestButton>
+                <Link
+                  href="/what-wed-pay"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-ink-line px-7 text-sm font-semibold tracking-[0.12em] text-cream uppercase transition hover:border-amber hover:text-amber"
+                >
+                  Search a bottle
+                </Link>
               </div>
             </div>
 
@@ -287,7 +294,7 @@ export default function HomePage() {
       {/* Built for the Liquor Aisle */}
       <section id="liquor-aisle" className="scroll-mt-20 border-b border-ink-line">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
-          <p className="eyebrow">Coming soon · Liquor Store Mode</p>
+          <p className="eyebrow">Liquor Store Mode</p>
           <h2 className="mt-4 max-w-2xl text-4xl leading-tight text-cream sm:text-5xl">
             Built for the liquor aisle.
           </h2>
@@ -331,13 +338,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10">
-            <InterestButton
-              feature="Liquor Store Mode"
-              placement="liquor_aisle_section"
-              variant="solid"
+            <Link
+              href="/at-the-store"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-amber px-7 text-sm font-semibold tracking-[0.12em] text-ink uppercase transition hover:bg-amber-glow"
             >
-              Tell me when it&apos;s live
-            </InterestButton>
+              Open store mode
+            </Link>
           </div>
         </div>
       </section>

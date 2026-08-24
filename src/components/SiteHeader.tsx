@@ -12,9 +12,9 @@ import { track } from "@/lib/analytics";
  */
 const NAV = [
   { label: "Bourbon", href: "/bourbon" },
-  { label: "What We'd Pay", href: "/#what-wed-pay" },
+  { label: "What We'd Pay", href: "/what-wed-pay" },
+  { label: "At the Store", href: "/at-the-store" },
   { label: "Find My Next Pour", href: "/#find-my-next-pour", note: "Coming soon" },
-  { label: "Liquor Store Mode", href: "/#liquor-aisle", note: "Coming soon" },
   { label: "The Weekly Pour", href: "/#weekly-pour" },
 ];
 
