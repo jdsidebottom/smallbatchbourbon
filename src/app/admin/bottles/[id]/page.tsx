@@ -7,6 +7,8 @@ import {
   addAlternative,
   addRetailerDestination,
   addSource,
+  removeBottleImage,
+  uploadBottleImage,
   deleteAlternative,
   deleteRetailerDestination,
   deleteSource,
@@ -17,6 +19,7 @@ import {
   setPublicationStatus,
 } from "@/app/admin/bottles/actions";
 import { BottleIdentityForm } from "@/components/admin/BottleIdentityForm";
+import { BottleImageForm } from "@/components/admin/BottleImageForm";
 import {
   AddAlternativeForm,
   AddRetailerForm,
@@ -28,6 +31,7 @@ import {
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { PublishPanel } from "@/components/admin/PublishPanel";
 import { formatCents } from "@/lib/domain/bottle";
+import { mediaUrl } from "@/lib/domain/media";
 
 export const dynamic = "force-dynamic";
 
@@ -91,9 +95,14 @@ export default async function EditBottlePage({
             producer: bottle.producer,
             actualDistiller: bottle.actual_distiller,
             description: bottle.description,
-            imagePath: bottle.image_path,
-            imageAlt: bottle.image_alt,
           }}
+        />
+
+        <BottleImageForm
+          imageUrl={mediaUrl(bottle.image_path)}
+          imageAlt={bottle.image_alt}
+          upload={uploadBottleImage.bind(null, bottle.id)}
+          remove={removeBottleImage.bind(null, bottle.id)}
         />
 
         <PriceLadderForm action={savePriceLadder.bind(null, id)} price={price} />

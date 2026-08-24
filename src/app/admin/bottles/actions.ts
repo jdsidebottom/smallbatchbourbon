@@ -7,6 +7,11 @@ import { requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getBottle } from "@/lib/data/bottles";
 import {
+  MEDIA_BUCKET,
+  buildMediaPath,
+  validateImage,
+} from "@/lib/domain/media";
+import {
   MASH_BILL_STATUSES,
   PUBLICATION_STATUSES,
   TASTING_AXES,
@@ -75,8 +80,6 @@ export async function saveBottle(
     producer: text(form, "producer"),
     actualDistiller: text(form, "actualDistiller"),
     description: text(form, "description"),
-    imagePath: text(form, "imagePath"),
-    imageAlt: text(form, "imageAlt"),
     status: (text(form, "status") ?? "draft") as (typeof PUBLICATION_STATUSES)[number],
   });
 
@@ -100,8 +103,8 @@ export async function saveBottle(
     producer: v.producer,
     actual_distiller: v.actualDistiller,
     description: v.description,
-    image_path: v.imagePath,
-    image_alt: v.imageAlt,
+    // image_path / image_alt are written only by uploadBottleImage, so saving
+    // the identity form can never blank out an uploaded image.
   };
 
   if (bottleId) {
@@ -124,6 +127,116 @@ export async function saveBottle(
 
   revalidatePath("/admin/bottles");
   redirect(`/admin/bottles/${data.id}`);
+}
+
+// ----------------------------------------------------------------- media ----
+
+/**
+ * Bottle photography.
+ *
+ * The upload never trusts the browser: the MIME type and size are re-checked
+ * server-side (the bucket enforces both again), and the stored filename is
+ * generated from the bottle slug plus a random suffix rather than taken from
+ * the uploaded file, so a crafted name cannot escape its prefix or collide.
+ *
+ * Alt text is saved in the same action as the image, because an image without
+ * alt text is exactly the state the publish gate refuses — making them separate
+ * saves would let an editor create it by accident.
+ */
+export async function uploadBottleImage(
+  bottleId: string,
+  _prev: ActionResult | null,
+  form: FormData,
+): Promise<ActionResult> {
+  const identity = await requireAdmin("contributor");
+  if (!uuid.safeParse(bottleId).success) return fail("Unknown bottle.");
+
+  const file = form.get("image");
+  const alt = (text(form, "imageAlt") ?? "").trim();
+
+  if (!(file instanceof File) || file.size === 0) {
+    return fail("Choose an image to upload.", { image: "No file selected." });
+  }
+
+  const check = validateImage({ type: file.type, size: file.size, name: file.name });
+  if (!check.ok) return fail(check.message, { image: check.message });
+
+  if (!alt) {
+    return fail("Describe the image for screen readers.", {
+      imageAlt: "Alt text is required.",
+    });
+  }
+
+  const supabase = createAdminClient();
+
+  const { data: bottle } = await supabase
+    .from("bottles")
+    .select("slug, image_path")
+    .eq("id", bottleId)
+    .maybeSingle();
+
+  if (!bottle) return fail("Unknown bottle.");
+
+  const path = buildMediaPath(bottle.slug as string, check.extension);
+
+  const { error: uploadError } = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) return fail(uploadError.message, { image: uploadError.message });
+
+  const { error } = await supabase
+    .from("bottles")
+    .update({ image_path: path, image_alt: alt, updated_by: identity.userId })
+    .eq("id", bottleId);
+
+  if (error) {
+    // The row did not take the new path, so the object just uploaded is
+    // unreferenced. Remove it rather than leaving the bucket to accumulate
+    // orphans no screen will ever show.
+    await supabase.storage.from(MEDIA_BUCKET).remove([path]);
+    return fail(friendly(error.message));
+  }
+
+  // Only once the row points at the new object is the old one safe to drop.
+  const previous = bottle.image_path as string | null;
+  if (previous && previous !== path && !/^https?:\/\//i.test(previous)) {
+    await supabase.storage.from(MEDIA_BUCKET).remove([previous]);
+  }
+
+  revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePath(`/bourbon/${bottle.slug}`);
+  return ok("Image uploaded.");
+}
+
+export async function removeBottleImage(bottleId: string): Promise<ActionResult> {
+  const identity = await requireAdmin("contributor");
+  if (!uuid.safeParse(bottleId).success) return fail("Unknown bottle.");
+
+  const supabase = createAdminClient();
+  const { data: bottle } = await supabase
+    .from("bottles")
+    .select("slug, image_path")
+    .eq("id", bottleId)
+    .maybeSingle();
+
+  if (!bottle) return fail("Unknown bottle.");
+
+  const { error } = await supabase
+    .from("bottles")
+    .update({ image_path: null, image_alt: null, updated_by: identity.userId })
+    .eq("id", bottleId);
+
+  if (error) return fail(friendly(error.message));
+
+  const previous = bottle.image_path as string | null;
+  if (previous && !/^https?:\/\//i.test(previous)) {
+    await supabase.storage.from(MEDIA_BUCKET).remove([previous]);
+  }
+
+  revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePath(`/bourbon/${bottle.slug}`);
+  return ok("Image removed.");
 }
 
 // ---------------------------------------------------------- price ladder ----

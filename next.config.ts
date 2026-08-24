@@ -64,6 +64,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
+    // Bottle photography is served from the public Supabase Storage bucket.
+    // Derived from the same env var as the CSP, so preview and production each
+    // allow their own project rather than a hardcoded host.
+    remotePatterns: supabase.origin
+      ? [
+          {
+            protocol: "https" as const,
+            hostname: new URL(supabase.origin).hostname,
+            pathname: "/storage/v1/object/public/**",
+          },
+        ]
+      : [],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

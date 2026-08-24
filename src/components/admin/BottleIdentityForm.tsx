@@ -24,8 +24,6 @@ type Defaults = {
   producer?: string | null;
   actualDistiller?: string | null;
   description?: string | null;
-  imagePath?: string | null;
-  imageAlt?: string | null;
 };
 
 export function BottleIdentityForm({
@@ -33,13 +31,11 @@ export function BottleIdentityForm({
   brands,
   defaults = {},
   submitLabel,
-  isNew = false,
 }: {
   action: (prev: ActionResult | null, form: FormData) => Promise<ActionResult>;
   brands: { id: string; name: string }[];
   defaults?: Defaults;
   submitLabel?: string;
-  isNew?: boolean;
 }) {
   return (
     <ActionSection
@@ -170,24 +166,6 @@ export function BottleIdentityForm({
             error={errors.description}
           />
 
-          {!isNew && (
-            <div className="grid gap-5 sm:grid-cols-2">
-              <TextField
-                name="imagePath"
-                label="Image path"
-                hint="Path within the bottle-media bucket."
-                defaultValue={defaults.imagePath}
-                error={errors.imagePath}
-              />
-              <TextField
-                name="imageAlt"
-                label="Image alt text"
-                hint="Required whenever an image is set."
-                defaultValue={defaults.imageAlt}
-                error={errors.imageAlt}
-              />
-            </div>
-          )}
         </>
       )}
     </ActionSection>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AffiliateLinks } from "@/components/bottle/AffiliateLinks";
 import { BottleCard } from "@/components/bottle/BottleCard";
+import { BottleImage } from "@/components/bottle/BottleImage";
 import { VerdictLadder } from "@/components/bottle/VerdictLadder";
 import { TastingProfile } from "@/components/bottle/TastingProfile";
 import { getPublishedBottle, listPublishedSlugs } from "@/lib/data/public-bottles";
@@ -108,15 +109,29 @@ export default async function BottlePage({ params }: { params: Promise<{ slug: s
       {/* Above the fold, in PRD §8.1 order: name, classification, reference
           price, What We'd Pay, proof and age, then the verdict. */}
       <header className="mt-6">
-        {brand && (
-          <p className="text-xs font-semibold tracking-[0.16em] text-amber uppercase">
-            {brand.name}
-          </p>
-        )}
-        <h1 className="mt-3 text-4xl leading-tight text-cream sm:text-5xl">{bottle.name}</h1>
-        {bottle.classification && (
-          <p className="mt-2 text-cream-dim">{bottle.classification}</p>
-        )}
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+          {/* priority: this is the largest above-the-fold element, so it is the
+              LCP candidate on a bottle page and must not wait for lazy loading. */}
+          <BottleImage
+            path={bottle.image_path}
+            alt={bottle.image_alt}
+            sizes="(min-width: 640px) 12rem, 40vw"
+            priority
+            className="w-32 shrink-0 sm:w-48"
+          />
+
+          <div className="min-w-0 flex-1">
+            {brand && (
+              <p className="text-xs font-semibold tracking-[0.16em] text-amber uppercase">
+                {brand.name}
+              </p>
+            )}
+            <h1 className="mt-3 text-4xl leading-tight text-cream sm:text-5xl">{bottle.name}</h1>
+            {bottle.classification && (
+              <p className="mt-2 text-cream-dim">{bottle.classification}</p>
+            )}
+          </div>
+        </div>
 
         {price && (
           <div className="mt-8 grid gap-4 rounded-2xl border border-ink-line bg-ink-card p-5 sm:grid-cols-2 sm:p-6">

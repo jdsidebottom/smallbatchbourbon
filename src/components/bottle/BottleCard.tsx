@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { formatCents } from "@/lib/domain/bottle";
 import { track } from "@/lib/analytics";
+import { BottleImage } from "@/components/bottle/BottleImage";
 import type { PublicBottleSummary } from "@/lib/data/public-bottles";
 import type { BusinessEvent } from "@/lib/analytics";
 
@@ -23,16 +24,28 @@ export function BottleCard({
       onClick={() => event && track(event, { bottle: bottle.slug, ...eventParams })}
       className="flex h-full flex-col rounded-2xl border border-ink-line bg-ink-card p-5 transition hover:border-amber/50"
     >
-      {bottle.brand && (
-        <span className="text-[0.65rem] font-semibold tracking-[0.16em] text-amber uppercase">
-          {bottle.brand.name}
-        </span>
-      )}
-      <span className="mt-2 font-display text-lg text-cream">{bottle.name}</span>
+      {/* div, not span: BottleImage renders a block element, and <a> may
+          contain flow content in HTML5 while <span> may not. */}
+      <div className="flex items-start gap-4">
+        <BottleImage
+          path={bottle.image_path}
+          alt={bottle.image_alt}
+          sizes="5rem"
+          className="w-20 shrink-0"
+        />
+        <div className="min-w-0 flex-1">
+          {bottle.brand && (
+            <span className="block text-[0.65rem] font-semibold tracking-[0.16em] text-amber uppercase">
+              {bottle.brand.name}
+            </span>
+          )}
+          <span className="mt-1 block font-display text-lg text-cream">{bottle.name}</span>
 
-      {bottle.classification && (
-        <span className="mt-1 text-xs text-cream-muted">{bottle.classification}</span>
-      )}
+          {bottle.classification && (
+            <span className="mt-1 block text-xs text-cream-muted">{bottle.classification}</span>
+          )}
+        </div>
+      </div>
 
       {note && <span className="mt-3 text-sm leading-relaxed text-cream-dim">{note}</span>}
 

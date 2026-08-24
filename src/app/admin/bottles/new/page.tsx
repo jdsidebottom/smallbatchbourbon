@@ -34,7 +34,6 @@ export default async function NewBottlePage() {
             action={saveBottle.bind(null, null)}
             brands={brands}
             submitLabel="Create draft"
-            isNew
           />
         </div>
       )}

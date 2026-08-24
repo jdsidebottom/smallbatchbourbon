@@ -5,6 +5,7 @@ import { track } from "@/lib/analytics";
 import { formatCents, TASTING_AXES } from "@/lib/domain/bottle";
 import { evaluateVerdict } from "@/lib/domain/verdict";
 import { VerdictPill } from "@/components/bottle/VerdictLadder";
+import { BottleImage } from "@/components/bottle/BottleImage";
 import type { GuidePick } from "@/lib/data/public-articles";
 
 /**
@@ -56,7 +57,14 @@ export function GuidePickCard({
         featured ? "border-amber/40" : "border-ink-line"
       }`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex items-start gap-4">
+        <BottleImage
+          path={bottle.image_path}
+          alt={bottle.image_alt}
+          sizes="4.5rem"
+          className="w-18 shrink-0"
+        />
+        <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           {pick.label && (
             <p className="text-[0.65rem] font-semibold tracking-[0.16em] text-amber uppercase">
@@ -78,6 +86,7 @@ export function GuidePickCard({
         </div>
 
         {referenceVerdict && <VerdictPill band={referenceVerdict} size="sm" />}
+        </div>
       </div>
 
       {pick.rationale && (
