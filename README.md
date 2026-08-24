@@ -12,7 +12,7 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 | M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
 | M4 | `/what-wed-pay` search and Liquor Store Mode | Done |
 | M5 | Buying-guide builder, guide pages, Gear/Learn article types, internal linking | Done |
-| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | In progress |
+| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | Done |
 
 ## Stack
 
@@ -157,6 +157,17 @@ non-production database.
   event names to the GA4 dataLayer.
 - **Security headers** — `next.config.ts`. HSTS and `upgrade-insecure-requests`
   apply in production only; `'unsafe-eval'` is dev-only.
+- **Media** — bottle photography is uploaded through the admin, validated for
+  MIME type and size on the server as well as by the bucket, and stored under a
+  generated filename. It renders through `next/image` in a fixed 3:4 box, so a
+  slow image shifts nothing below it.
+- **Hydration budget** — a card that only needs to fire an analytics event stays
+  a server component; `TrackedLink` isolates the click so the markup around it
+  never ships as JavaScript. Compressed transfer is ~188 KB on the home page and
+  ~250 KB on a bottle or guide page, most of it the shared React runtime.
+- **The age gate is a compliance control, not a banner.** While it is up the
+  rest of the page is `inert`, so a keyboard visitor cannot Tab past it into
+  alcohol content.
 
 ## Known follow-ups before public launch
 
@@ -181,9 +192,22 @@ non-production database.
 8. **Supabase advisor warnings.** `pg_trgm` is installed in the `public` schema,
    and leaked-password protection is disabled on Auth. Neither is exploitable as
    configured; both are M6 hardening items.
-9. **Guide pick titles are 25px tall.** The card heading link clears WCAG 2.5.8
-   (24×24) but not the AAA 44×44 target, and each card carries a full-height
-   "Full review" link to the same place. Revisit in the M6 accessibility pass.
+9. **Guide pick titles are ~26px tall** on a single line. The card heading link
+   clears WCAG 2.5.8 (24×24) but not the AAA 44×44 target; each card carries a
+   full-height "Full review" link to the same destination, and the remaining
+   sub-44px targets are all inline links inside sentences, which 2.5.8 exempts.
+10. **Enable admin MFA.** Supabase Auth supports TOTP and it is currently off.
+    With one account able to publish and delete editorial content this is the
+    highest-value remaining hardening step. Leaked-password protection is off
+    too, and is the same one-click area.
+11. **Stand up a separate production Supabase project.** Preview and production
+    must not share one (PRD §23). Only one project exists today, and it holds
+    demo content.
+12. **Rehearse a restore** into the preview project once. A backup that has
+    never been restored is a hypothesis. See `docs/operations.md` §5.
+13. **Cross-browser pass on real devices.** Everything here was verified in a
+    Chromium engine. PRD §22 asks for current iOS Safari and Android Chrome,
+    which needs real hardware.
 
 ## Operations and security
 
