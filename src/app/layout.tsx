@@ -43,6 +43,15 @@ export const metadata: Metadata = {
     description: site.description,
   },
   robots: { index: true, follow: true },
+  // Search Console verification. A DNS TXT record is preferable where DNS is
+  // managed at Cloudflare; this is the fallback and is omitted when unset.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
   other: { rating: "adult" },
 };
 

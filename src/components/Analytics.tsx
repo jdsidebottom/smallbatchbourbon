@@ -1,31 +1,37 @@
 import Script from "next/script";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 
 /**
- * GA4 and Microsoft Clarity load only when their IDs are configured, so no
- * third-party script ships before the accounts exist (PRD §21, §22).
+ * Measurement, chosen so the site needs no cookie consent banner.
+ *
+ * Both providers here are cookieless and store no personal data, which is why
+ * they can load without prior consent. That was the deciding factor over GA4
+ * and Clarity: session recording and advertising cookies would have required a
+ * consent dialog in front of every first-time visitor, on top of the 21+ gate.
+ *
+ *  - **Vercel Web Analytics** — page views and the PRD §21.1 business events.
+ *    Served same-origin from /_vercel/insights, so it needs no CSP exception
+ *    and no third-party connection.
+ *  - **Cloudflare Web Analytics** — an independent page-view count. Optional:
+ *    without a token, nothing is injected.
+ *
+ * Google Search Console is not here and needs nothing here. It reports on our
+ * own search performance and sets nothing on a visitor's device; verification
+ * is a DNS record or the `google` value in the layout's metadata.
  */
 export function Analytics() {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID;
+  const cloudflareToken = process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN;
 
   return (
     <>
-      {gaId && (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            strategy="afterInteractive"
-          />
-          <Script id="ga4-init" strategy="afterInteractive">
-            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}');`}
-          </Script>
-        </>
-      )}
+      <VercelAnalytics />
 
-      {clarityId && (
-        <Script id="clarity-init" strategy="afterInteractive">
-          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","${clarityId}");`}
-        </Script>
+      {cloudflareToken && (
+        <Script
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          data-cf-beacon={JSON.stringify({ token: cloudflareToken })}
+        />
       )}
     </>
   );

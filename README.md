@@ -41,8 +41,8 @@ npm run dev
 | `SUPABASE_SERVICE_ROLE_KEY` | For admin | Server-only. Bypasses RLS |
 | `BEEHIIV_API_KEY` | For live signup | Newsletter provider auth |
 | `BEEHIIV_PUBLICATION_ID` | For live signup | Target publication |
-| `NEXT_PUBLIC_GA_ID` | No | GA4; script only loads when set |
-| `NEXT_PUBLIC_CLARITY_ID` | No | Microsoft Clarity; only loads when set |
+| `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` | No | Cloudflare Web Analytics; no beacon is injected without it |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | No | Search Console meta tag; prefer a DNS TXT record instead |
 
 The service-role key bypasses Row Level Security. It must never appear in a
 `NEXT_PUBLIC_` variable and never reach the browser. `src/lib/supabase/admin.ts`
@@ -153,8 +153,20 @@ non-production database.
 - **Search** — a trigger-maintained tsvector (which includes the brand name, so
   "Weller" finds every Weller bottle) plus a trigram index on the name for
   prefix and near-miss autocomplete.
-- **Analytics** — `track()` in `src/lib/analytics.ts` emits the PRD §21.1 business
-  event names to the GA4 dataLayer.
+- **Analytics, and why there is no cookie banner** — measurement runs on Vercel
+  Web Analytics (page views plus the eleven PRD §21.1 business events) with
+  Cloudflare Web Analytics optionally alongside for an independent traffic
+  count. Both are cookieless and store no personal data, so no prior consent is
+  required and a first-time reader meets one interstitial — the 21+ gate — rather
+  than two. GA4 and Clarity were dropped for exactly that reason: session
+  recording and advertising cookies would have required a consent dialog.
+  Google Search Console needs nothing in the app; it reports on our own search
+  performance and sets nothing on a visitor's device.
+
+  The provider sits behind a single `track()` in `src/lib/analytics.ts`. Swapping
+  GA4 and Clarity out for Vercel touched that one file — no component knows who
+  collects the data. Keep it that way, and **do not add a provider that sets
+  cookies without also adding consent.**
 - **Security headers** — `next.config.ts`. HSTS and `upgrade-insecure-requests`
   apply in production only; `'unsafe-eval'` is dev-only.
 - **Media** — bottle photography is uploaded through the admin, validated for

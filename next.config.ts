@@ -4,10 +4,11 @@ import { supabaseCspOrigins } from "./src/lib/domain/csp";
 /**
  * Content Security Policy.
  *
- * `'unsafe-inline'` on script-src is currently required by the pre-paint age-gate
- * bootstrap and the GA/Clarity init snippets, which must run inline for the page
- * to stay statically generated. Tighten this to a nonce- or hash-based policy
- * when the app moves to dynamic rendering in a later milestone.
+ * `'unsafe-inline'` on script-src is now required by exactly one script: the
+ * pre-paint age-gate bootstrap, which must run inline to dismiss the gate before
+ * paint without giving up static generation. Dropping GA4 and Clarity removed
+ * the other inline snippets, so a hash-based policy covering that single script
+ * is now a small change rather than a rewrite — worth doing before launch.
  */
 const isProd = process.env.NODE_ENV === "production";
 
@@ -25,18 +26,20 @@ const csp = [
   "object-src 'none'",
   // React's development build needs eval() for its debugging features. It is
   // never permitted in production.
+  // Vercel Web Analytics is served same-origin from /_vercel/insights, so it
+  // needs no exception here. Only Cloudflare's beacon is third-party.
   `script-src 'self' 'unsafe-inline'${
     isProd ? "" : " 'unsafe-eval'"
-  } https://www.googletagmanager.com https://www.clarity.ms`,
+  } https://static.cloudflareinsights.com`,
   "style-src 'self' 'unsafe-inline'",
   // Bottle images are served from the public Supabase Storage bucket.
-  `img-src 'self' data: blob: https://www.google-analytics.com https://c.bing.com${
+  `img-src 'self' data: blob:${
     supabase.imgSrc.length ? ` ${supabase.imgSrc.join(" ")}` : ""
   }`,
   "font-src 'self' data:",
   // ws: is the Next dev-server hot-reload socket; Chrome does not treat it as
   // covered by 'self'.
-  `connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms${
+  `connect-src 'self' https://cloudflareinsights.com${
     supabase.connectSrc.length ? ` ${supabase.connectSrc.join(" ")}` : ""
   }${isProd ? "" : " ws://localhost:* http://localhost:*"}`,
   // Would rewrite http://localhost to https during local development.

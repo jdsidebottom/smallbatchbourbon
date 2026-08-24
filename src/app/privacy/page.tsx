@@ -38,9 +38,11 @@ export default function PrivacyPage() {
             provider so they can deliver the newsletter.
           </li>
           <li>
-            <strong>Usage analytics.</strong> Aggregate measurement of pages viewed,
-            features used, and links clicked, so we know which content is worth writing
-            more of.
+            <strong>Usage analytics.</strong> Aggregate, cookieless measurement of pages
+            viewed, features used, and links clicked, so we know which content is worth
+            writing more of. Our analytics providers do not set cookies, do not store
+            identifiers on your device, and do not build a profile of you across sites or
+            over time. We cannot tell who you are from this data, and neither can they.
           </li>
           <li>
             <strong>Server logs.</strong> Standard request data, including IP address,
@@ -61,10 +63,19 @@ export default function PrivacyPage() {
 
         <h2>Cookies and similar technologies</h2>
         <p>
-          The age-gate cookie is strictly necessary for the site to work as intended.
-          Analytics tools may set their own cookies or identifiers. You can block or clear
-          cookies in your browser; clearing the age cookie means you&apos;ll see the 21+
-          prompt again.
+          This site sets <strong>one cookie</strong>. It records that you confirmed you are
+          21 or older, so you are not asked again on every page. It is strictly necessary
+          for the site to work as intended and contains nothing but that acknowledgement.
+        </p>
+        <p>
+          We deliberately chose analytics that set no cookies and no device identifiers.
+          That is why you are not asked to accept anything before reading: there is
+          nothing to accept. If we ever adopt a tool that tracks you, we will ask first
+          rather than assume.
+        </p>
+        <p>
+          You can block or clear cookies in your browser at any time. Clearing the age
+          cookie simply means you&apos;ll see the 21+ prompt again.
         </p>
 
         <h2>Your choices</h2>
