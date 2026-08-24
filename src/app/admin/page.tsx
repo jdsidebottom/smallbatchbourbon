@@ -32,9 +32,22 @@ export default async function AdminDashboard() {
   const supabase = createAdminClient();
   const { data: recent } = await supabase
     .from("audit_log")
-    .select("id, entity_table, entity_id, action, created_at")
+    .select("id, entity_table, entity_id, action, actor_id, changed_fields, created_at")
     .order("created_at", { ascending: false })
     .limit(12);
+
+  // audit_log.actor_id references auth.users, which PostgREST does not expose,
+  // so resolve names from admin_users in a second read.
+  const { data: editors } = await supabase
+    .from("admin_users")
+    .select("user_id, email, display_name");
+
+  const editorName = new Map(
+    (editors ?? []).map((e) => [
+      e.user_id as string,
+      (e.display_name as string | null) ?? (e.email as string),
+    ]),
+  );
 
   const tiles = [
     { label: "Bottles", value: stats.bottles, href: "/admin/bottles" },
@@ -76,11 +89,24 @@ export default async function AdminDashboard() {
           <ul className="mt-4 divide-y divide-ink-line">
             {recent.map((entry) => (
               <li key={entry.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3 text-sm">
-                <span className="w-20 text-xs tracking-[0.12em] text-amber uppercase">
+                <span className="w-20 shrink-0 text-xs tracking-[0.12em] text-amber uppercase">
                   {entry.action}
                 </span>
-                <span className="flex-1 text-cream-dim">{entry.entity_table}</span>
-                <time className="text-xs text-cream-muted" dateTime={entry.created_at}>
+                <span className="min-w-0 flex-1 text-cream-dim">
+                  {entry.entity_table}
+                  {entry.changed_fields && entry.changed_fields.length > 0 && (
+                    <span className="text-cream-muted">
+                      {" · "}
+                      {(entry.changed_fields as string[]).join(", ")}
+                    </span>
+                  )}
+                </span>
+                <span className="shrink-0 text-xs text-cream-muted">
+                  {entry.actor_id
+                    ? (editorName.get(entry.actor_id as string) ?? "Unknown editor")
+                    : "System"}
+                </span>
+                <time className="shrink-0 text-xs text-cream-muted" dateTime={entry.created_at}>
                   {new Date(entry.created_at).toLocaleString()}
                 </time>
               </li>

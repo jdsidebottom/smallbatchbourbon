@@ -86,6 +86,7 @@ export async function saveBottle(
   const supabase = createAdminClient();
 
   const row = {
+    updated_by: identity.userId,
     slug: v.slug,
     brand_id: v.brandId,
     name: v.name,
@@ -132,7 +133,7 @@ export async function savePriceLadder(
   _prev: ActionResult | null,
   form: FormData,
 ): Promise<ActionResult> {
-  await requireAdmin("contributor");
+  const identity = await requireAdmin("contributor");
   if (!uuid.safeParse(bottleId).success) return fail("Unknown bottle.");
 
   const parsed = priceLadderSchema.safeParse({
@@ -155,6 +156,7 @@ export async function savePriceLadder(
   const { error } = await supabase.from("bottle_prices").upsert(
     {
       bottle_id: bottleId,
+      updated_by: identity.userId,
       msrp_cents: v.msrpCents,
       msrp_source_url: v.msrpSourceUrl,
       msrp_source_note: v.msrpSourceNote,
@@ -441,7 +443,7 @@ export async function setPublicationStatus(
   bottleId: string,
   status: "draft" | "review" | "published" | "archived",
 ): Promise<ActionResult> {
-  await requireAdmin("editor");
+  const identity = await requireAdmin("editor");
   if (!uuid.safeParse(bottleId).success) return fail("Unknown bottle.");
 
   if (status === "published") {
@@ -458,6 +460,7 @@ export async function setPublicationStatus(
     .from("bottles")
     .update({
       status,
+      updated_by: identity.userId,
       published_at: status === "published" ? new Date().toISOString() : null,
     })
     .eq("id", bottleId);
