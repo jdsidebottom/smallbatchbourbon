@@ -16,8 +16,7 @@ export type BusinessEvent =
   | "store_mode_price_checked"
   | "affiliate_click"
   | "alternative_clicked"
-  | "buying_guide_bottle_clicked"
-  | "outbound_social_click";
+  | "buying_guide_bottle_clicked";
 
 type EventParams = Record<string, string | number | boolean | undefined>;
 
