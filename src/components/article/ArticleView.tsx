@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { GuidePickCard } from "@/components/article/GuidePickCard";
 import { RichText } from "@/components/article/RichText";
-import { ARTICLE_TYPE_LABELS, TOP_PICK_COUNT, isGuideType } from "@/lib/domain/article";
+import { JsonLd } from "@/components/JsonLd";
+import {
+  ARTICLE_TYPE_LABELS,
+  ARTICLE_ROUTE_PREFIX,
+  TOP_PICK_COUNT,
+  articlePath,
+  isGuideType,
+} from "@/lib/domain/article";
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import type { PublicArticle } from "@/lib/data/public-articles";
 
 const formatDate = (value: string) =>
@@ -19,6 +27,17 @@ export function ArticleView({ article }: { article: PublicArticle }) {
 
   return (
     <article className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
+      <JsonLd data={articleJsonLd(article)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          {
+            name: ARTICLE_TYPE_LABELS[article.article_type],
+            path: ARTICLE_ROUTE_PREFIX[article.article_type],
+          },
+          { name: article.title, path: articlePath(article.article_type, article.slug) },
+        ])}
+      />
+
       <header className="mx-auto max-w-3xl">
         <p className="eyebrow">{ARTICLE_TYPE_LABELS[article.article_type]}</p>
         <h1 className="mt-4 text-4xl leading-tight text-cream sm:text-5xl">{article.title}</h1>

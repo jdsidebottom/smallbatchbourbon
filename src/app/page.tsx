@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/JsonLd";
+import { websiteJsonLd } from "@/lib/structured-data";
 import Link from "next/link";
 import { HeroCta } from "@/components/HeroCta";
 import { InterestButton } from "@/components/InterestButton";
@@ -57,6 +59,8 @@ const STORE_MODE_STEPS = [
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={websiteJsonLd()} />
+
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-ink-line">
         <div

@@ -9,6 +9,8 @@ import { TastingProfile } from "@/components/bottle/TastingProfile";
 import { getPublishedBottle, listPublishedSlugs } from "@/lib/data/public-bottles";
 import { getGuidesFeaturingBottle } from "@/lib/data/public-articles";
 import { articlePath } from "@/lib/domain/article";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { formatCents } from "@/lib/domain/bottle";
 import { site } from "@/lib/site";
 
@@ -96,6 +98,13 @@ export default async function BottlePage({ params }: { params: Promise<{ slug: s
 
   return (
     <article className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Bourbon", path: "/bourbon" },
+          { name: bottle.name, path: `/bourbon/${bottle.slug}` },
+        ])}
+      />
+
       <nav aria-label="Breadcrumb" className="text-sm text-cream-muted">
         <Link href="/bourbon" className="hover:text-cream">
           Bourbon
