@@ -38,6 +38,7 @@ export function TextField({
   required,
   step,
   inputMode,
+  onChange,
 }: {
   name: string;
   label: string;
@@ -49,6 +50,7 @@ export function TextField({
   required?: boolean;
   step?: string;
   inputMode?: "text" | "decimal" | "numeric";
+  onChange?: (value: string) => void;
 }) {
   return (
     <div>
@@ -64,6 +66,7 @@ export function TextField({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? ""}
+        onChange={onChange ? (event) => onChange(event.target.value) : undefined}
         aria-invalid={Boolean(error)}
         className={inputBase}
       />
@@ -113,6 +116,7 @@ export function SelectField({
   defaultValue,
   options,
   placeholder,
+  onChange,
 }: {
   name: string;
   label: string;
@@ -121,6 +125,7 @@ export function SelectField({
   defaultValue?: string | null;
   options: { value: string; label: string }[];
   placeholder?: string;
+  onChange?: (value: string) => void;
 }) {
   return (
     <div>
@@ -131,6 +136,7 @@ export function SelectField({
         id={name}
         name={name}
         defaultValue={defaultValue ?? ""}
+        onChange={onChange ? (event) => onChange(event.target.value) : undefined}
         aria-invalid={Boolean(error)}
         className={inputBase}
       >

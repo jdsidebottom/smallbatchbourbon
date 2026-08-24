@@ -11,8 +11,8 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 | M2 | Supabase schema/RLS, admin auth, bottle CRUD, media, sources, What We'd Pay thresholds, completeness | Done |
 | M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
 | M4 | `/what-wed-pay` search and Liquor Store Mode | Done |
-| M5 | Buying-guide builder, Gear/Learn article types, internal linking | Next |
-| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | — |
+| M5 | Buying-guide builder, guide pages, Gear/Learn article types, internal linking | Done |
+| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | Next |
 
 ## Stack
 
@@ -81,6 +81,11 @@ alternatives and the affiliate redirect locally. It exists so that no real
 product ever gets an invented price or verdict. Local and preview only — remove
 it with `demo_bottle_teardown.sql`.
 
+`supabase/seed/demo_guide.sql` adds a demonstration buying guide and Learn page
+on top of those bottles. The guide deliberately mixes a fully-populated pick with
+a sparse one, so the "no verified reference price means no verdict" path is
+exercised rather than assumed. Remove it with `demo_guide_teardown.sql`.
+
 ### Security tests
 
 ```bash
@@ -130,6 +135,21 @@ non-production database.
   shopper stops typing rather than costing a round trip in an aisle with one bar
   of signal. Alternatives are fetched lazily and shown only when the verdict is
   Fair or worse.
+- **Editorial content** — one `articles` table across buying guides,
+  alternatives, Learn and Gear; the type picks the route prefix (`/best`,
+  `/alternatives`, `/learn`, `/gear`) and slugs are unique site-wide, so
+  retyping an article moves its URL without risking a collision. A guide's
+  `guide_items` store only rank, label and rationale: proof, reference price,
+  the price ladder, the verdict, the flavour profile and Best for / Skip if all
+  render from the canonical bottle record on every request, so correcting a
+  bottle corrects every guide that features it. Publication is gated on the same
+  kind of completeness report bottles use — a guide whose pick points at an
+  unpublished bottle is refused rather than shipping with a hole where a card
+  should be.
+- **Article body copy** — a small markdown subset (`src/lib/domain/richtext.ts`)
+  parsed to a typed tree and rendered as React elements. No markdown dependency,
+  no `dangerouslySetInnerHTML`, and no path by which editorial copy can inject
+  markup; `javascript:` and protocol-relative hrefs render as plain text.
 - **Search** — a trigger-maintained tsvector (which includes the brand name, so
   "Weller" finds every Weller bottle) plus a trigram index on the name for
   prefix and near-miss autocomplete.
@@ -158,6 +178,12 @@ non-production database.
    than one instance.
 7. **Backup and restore** procedure needs documenting before material production
    editorial data accumulates (M6).
+8. **Supabase advisor warnings.** `pg_trgm` is installed in the `public` schema,
+   and leaked-password protection is disabled on Auth. Neither is exploitable as
+   configured; both are M6 hardening items.
+9. **Guide pick titles are 25px tall.** The card heading link clears WCAG 2.5.8
+   (24×24) but not the AAA 44×44 target, and each card carries a full-height
+   "Full review" link to the same place. Revisit in the M6 accessibility pass.
 
 ## Scripts
 

@@ -6,6 +6,8 @@ import { BottleCard } from "@/components/bottle/BottleCard";
 import { VerdictLadder } from "@/components/bottle/VerdictLadder";
 import { TastingProfile } from "@/components/bottle/TastingProfile";
 import { getPublishedBottle, listPublishedSlugs } from "@/lib/data/public-bottles";
+import { getGuidesFeaturingBottle } from "@/lib/data/public-articles";
+import { articlePath } from "@/lib/domain/article";
 import { formatCents } from "@/lib/domain/bottle";
 import { site } from "@/lib/site";
 
@@ -58,6 +60,10 @@ export default async function BottlePage({ params }: { params: Promise<{ slug: s
   const { slug } = await params;
   const bottle = await getPublishedBottle(slug);
   if (!bottle) notFound();
+
+  // Closes the loop between the canonical record and the commercial content
+  // that recommends it (PRD §20 internal linking).
+  const guides = await getGuidesFeaturingBottle(bottle.id);
 
   const { price, review, brand } = bottle;
 
@@ -305,6 +311,29 @@ export default async function BottlePage({ params }: { params: Promise<{ slug: s
                     event="alternative_clicked"
                     eventParams={{ from: bottle.slug, relationship: alt.relationship_type }}
                   />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {guides.length > 0 && (
+          <section aria-labelledby="featured-in">
+            <h2 id="featured-in" className="font-display text-2xl text-cream">
+              Featured in
+            </h2>
+            <ul className="mt-5 space-y-2">
+              {guides.map((guide) => (
+                <li key={guide.id}>
+                  <Link
+                    href={articlePath(guide.article_type, guide.slug)}
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border border-ink-line bg-ink-card p-4 transition hover:border-amber/50"
+                  >
+                    <span className="min-w-0 flex-1 text-cream">{guide.title}</span>
+                    <span className="shrink-0 text-xs tracking-[0.12em] text-amber uppercase">
+                      {guide.label ?? `Pick #${guide.rank}`}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>

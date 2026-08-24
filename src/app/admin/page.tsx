@@ -55,7 +55,7 @@ export default async function AdminDashboard() {
     { label: "Drafts", value: stats.drafts, href: "/admin/bottles" },
     { label: "Brands", value: stats.brands, href: "/admin/brands" },
     { label: "Active retailers", value: stats.retailers, href: "/admin" },
-    { label: "Articles", value: stats.articles, href: "/admin" },
+    { label: "Articles", value: stats.articles, href: "/admin/content" },
   ];
 
   return (

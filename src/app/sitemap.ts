@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listPublishedSlugs } from "@/lib/data/public-bottles";
+import { listPublishedArticleSlugs } from "@/lib/data/public-articles";
+import { articlePath } from "@/lib/domain/article";
 import { site } from "@/lib/site";
 
 export const revalidate = 3600;
@@ -9,6 +11,10 @@ const STATIC_ROUTES = [
   { path: "/bourbon", priority: 0.9 },
   { path: "/what-wed-pay", priority: 0.9 },
   { path: "/at-the-store", priority: 0.7 },
+  { path: "/best", priority: 0.9 },
+  { path: "/alternatives", priority: 0.8 },
+  { path: "/learn", priority: 0.7 },
+  { path: "/gear", priority: 0.6 },
   { path: "/about", priority: 0.6 },
   { path: "/contact", priority: 0.4 },
   { path: "/editorial-policy", priority: 0.4 },
@@ -28,8 +34,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority,
   }));
 
-  // Only published bottles come back — RLS decides, not this query.
-  const bottles = await listPublishedSlugs();
+  // Only published records come back — RLS decides, not these queries.
+  const [bottles, articles] = await Promise.all([
+    listPublishedSlugs(),
+    listPublishedArticleSlugs(),
+  ]);
 
   const bottleEntries = bottles.map(({ slug, updated_at }) => ({
     url: new URL(`/bourbon/${slug}`, site.url).toString(),
@@ -37,5 +46,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...bottleEntries];
+  // Buying guides carry the highest commercial intent, so they outrank the
+  // evergreen types here.
+  const ARTICLE_PRIORITY: Record<string, number> = {
+    buying_guide: 0.9,
+    alternatives: 0.8,
+    learn: 0.6,
+    gear: 0.6,
+    news: 0.5,
+  };
+
+  const articleEntries = articles.map(({ slug, article_type, updated_at }) => ({
+    url: new URL(articlePath(article_type, slug), site.url).toString(),
+    lastModified: new Date(updated_at),
+    priority: ARTICLE_PRIORITY[article_type] ?? 0.5,
+  }));
+
+  return [...staticEntries, ...bottleEntries, ...articleEntries];
 }
