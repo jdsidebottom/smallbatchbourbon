@@ -122,12 +122,27 @@ export async function listBottles(): Promise<BottleListItem[]> {
        reviews ( quick_take, nose, palate, finish, overall, best_for, skip_if ),
        tasting_profiles ( bottle_id ),
        bottle_relationships!bottle_relationships_source_bottle_id_fkey ( id ),
-       bottle_retailers ( id ),
-       sources_count:sources ( id )`,
+       bottle_retailers ( id )`,
     )
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
+
+  // `sources` is polymorphic — it points at any table via (entity_table,
+  // entity_id) rather than a foreign key — so PostgREST cannot embed it. Count
+  // per bottle with a separate read instead.
+  const { data: sourceRows, error: sourceError } = await supabase
+    .from("sources")
+    .select("entity_id")
+    .eq("entity_table", "bottles");
+
+  if (sourceError) throw sourceError;
+
+  const sourceCounts = new Map<string, number>();
+  for (const row of sourceRows ?? []) {
+    const key = (row as { entity_id: string }).entity_id;
+    sourceCounts.set(key, (sourceCounts.get(key) ?? 0) + 1);
+  }
 
   return (data ?? []).map((row) => {
     const record = row as Record<string, unknown> & BottleRow;
@@ -141,7 +156,7 @@ export async function listBottles(): Promise<BottleListItem[]> {
       tastingProfileSet: countOf(record.tasting_profiles) > 0,
       alternativeCount: countOf(record.bottle_relationships),
       retailerCount: countOf(record.bottle_retailers),
-      sourceCount: countOf(record.sources_count),
+      sourceCount: sourceCounts.get(record.id) ?? 0,
     });
 
     return {
