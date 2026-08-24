@@ -1,7 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { track } from "@/lib/analytics";
+import { TrackedLink } from "@/components/TrackedLink";
 import { formatCents, TASTING_AXES } from "@/lib/domain/bottle";
 import { evaluateVerdict } from "@/lib/domain/verdict";
 import { VerdictPill } from "@/components/bottle/VerdictLadder";
@@ -44,12 +41,7 @@ export function GuidePickCard({
 
   const profile = topFlavours(bottle.tasting);
 
-  const onClick = () =>
-    track("buying_guide_bottle_clicked", {
-      guide: guideSlug,
-      bottle: bottle.slug,
-      rank: pick.rank,
-    });
+  const clickParams = { guide: guideSlug, bottle: bottle.slug, rank: pick.rank };
 
   return (
     <article
@@ -75,13 +67,14 @@ export function GuidePickCard({
             <p className="mt-1 text-xs text-cream-muted">{bottle.brand.name}</p>
           )}
           <h3 className="mt-1 font-display text-xl text-cream">
-            <Link
+            <TrackedLink
               href={`/bourbon/${bottle.slug}`}
-              onClick={onClick}
+              event="buying_guide_bottle_clicked"
+              params={clickParams}
               className="transition hover:text-amber"
             >
               {bottle.name}
-            </Link>
+            </TrackedLink>
           </h3>
         </div>
 
@@ -135,13 +128,14 @@ export function GuidePickCard({
       )}
 
       <div className="mt-auto pt-5">
-        <Link
+        <TrackedLink
           href={`/bourbon/${bottle.slug}`}
-          onClick={onClick}
+          event="buying_guide_bottle_clicked"
+          params={clickParams}
           className="inline-flex min-h-11 items-center text-sm font-semibold tracking-[0.1em] text-amber uppercase transition hover:text-amber-glow"
         >
           Full review →
-        </Link>
+        </TrackedLink>
       </div>
     </article>
   );

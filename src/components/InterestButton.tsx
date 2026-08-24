@@ -1,6 +1,4 @@
-"use client";
-
-import { track } from "@/lib/analytics";
+import { TrackedLink } from "@/components/TrackedLink";
 
 /**
  * Used for features that are previewed but not yet live. It records interest
@@ -27,12 +25,13 @@ export function InterestButton({
       : "border border-ink-line text-cream hover:border-amber hover:text-amber";
 
   return (
-    <a
+    <TrackedLink
       href={`#${targetId}`}
-      onClick={() => track("feature_interest_clicked", { feature, placement })}
+      event="feature_interest_clicked"
+      params={{ feature, placement }}
       className={`${base} ${styles}`}
     >
       {children}
-    </a>
+    </TrackedLink>
   );
 }

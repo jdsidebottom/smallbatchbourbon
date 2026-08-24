@@ -1,7 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { track } from "@/lib/analytics";
+import { TrackedLink } from "@/components/TrackedLink";
 
 /**
  * Outbound retailer links. Every href is the internal /go route — the real
@@ -34,18 +32,18 @@ export function AffiliateLinks({
       <ul className="mt-5 space-y-2">
         {retailers.map(({ id, retailer }) => (
           <li key={id}>
-            <a
+            <TrackedLink
               href={`/go/${retailer.slug}/${bottleSlug}`}
+              event="affiliate_click"
+              params={{ merchant: retailer.slug, bottle: bottleSlug }}
+              external
               rel="sponsored nofollow noopener"
               target="_blank"
-              onClick={() =>
-                track("affiliate_click", { merchant: retailer.slug, bottle: bottleSlug })
-              }
               className="flex min-h-12 items-center justify-between gap-4 rounded-full border border-ink-line px-5 text-sm text-cream transition hover:border-amber hover:text-amber"
             >
               <span>{retailer.name}</span>
               <span aria-hidden="true">→</span>
-            </a>
+            </TrackedLink>
             {retailer.disclosure_note && (
               <p className="mt-1 px-5 text-xs text-cream-muted">{retailer.disclosure_note}</p>
             )}

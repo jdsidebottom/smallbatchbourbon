@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { formatCents } from "@/lib/domain/bottle";
-import { track } from "@/lib/analytics";
+import { TrackedLink } from "@/components/TrackedLink";
 import { BottleImage } from "@/components/bottle/BottleImage";
 import type { PublicBottleSummary } from "@/lib/data/public-bottles";
 import type { BusinessEvent } from "@/lib/analytics";
@@ -19,11 +17,7 @@ export function BottleCard({
   eventParams?: Record<string, string>;
 }) {
   return (
-    <Link
-      href={`/bourbon/${bottle.slug}`}
-      onClick={() => event && track(event, { bottle: bottle.slug, ...eventParams })}
-      className="flex h-full flex-col rounded-2xl border border-ink-line bg-ink-card p-5 transition hover:border-amber/50"
-    >
+    <Card slug={bottle.slug} event={event} eventParams={eventParams}>
       {/* div, not span: BottleImage renders a block element, and <a> may
           contain flow content in HTML5 while <span> may not. */}
       <div className="flex items-start gap-4">
@@ -62,6 +56,44 @@ export function BottleCard({
           <span className="text-cream-muted">{Number(bottle.proof)} proof</span>
         )}
       </span>
-    </Link>
+    </Card>
+  );
+}
+
+/**
+ * Only the anchor needs to be a client component when an event is being
+ * recorded; without one the card stays entirely server-rendered.
+ */
+function Card({
+  slug,
+  event,
+  eventParams,
+  children,
+}: {
+  slug: string;
+  event?: BusinessEvent;
+  eventParams?: Record<string, string>;
+  children: React.ReactNode;
+}) {
+  const className =
+    "flex h-full flex-col rounded-2xl border border-ink-line bg-ink-card p-5 transition hover:border-amber/50";
+
+  if (!event) {
+    return (
+      <Link href={`/bourbon/${slug}`} className={className}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <TrackedLink
+      href={`/bourbon/${slug}`}
+      event={event}
+      params={{ bottle: slug, ...eventParams }}
+      className={className}
+    >
+      {children}
+    </TrackedLink>
   );
 }
