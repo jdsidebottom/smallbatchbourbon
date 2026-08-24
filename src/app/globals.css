@@ -26,7 +26,13 @@
   --color-verdict-maybe: #e07f3c;
   --color-verdict-walk: #d9584f;
 
+  /* Editor's-pen red for the hero annotation. Deliberately its own token rather
+     than reusing verdict-walk: that red means "Walk Away" in the product, and
+     retuning one should never silently retune the other. 5.88:1 on ink. */
+  --color-marker: #ef5a4c;
+
   --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-hand: var(--font-caveat), "Segoe Script", "Bradley Hand", cursive;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 

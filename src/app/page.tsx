@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HeroBackdrop } from "@/components/HeroBackdrop";
+import { HeroEyebrow } from "@/components/HeroEyebrow";
 import { JsonLd } from "@/components/JsonLd";
 import { websiteJsonLd } from "@/lib/structured-data";
 import Link from "next/link";
@@ -66,11 +67,14 @@ export default function HomePage() {
       <section className="relative overflow-hidden border-b border-ink-line">
         <HeroBackdrop />
         <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-20 sm:pt-24 sm:pb-28">
-          <p className="eyebrow">Bourbon, without the theatrics</p>
+          <HeroEyebrow />
           <h1 className="mt-5 max-w-3xl text-[2.6rem] leading-[1.05] text-cream sm:text-6xl lg:text-7xl">
             Drink smarter.
             <br />
-            <span className="text-amber">Ignore the noise.</span>
+            {/* Stepped in by one capital, so "Ignore" begins under the "r" of
+                "Drink". Measured: the D is 0.77em wide at every size, so an em
+                indent holds the alignment across breakpoints. */}
+            <span className="ml-[0.77em] inline-block text-amber">Ignore the noise.</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream-dim">
             Straightforward bourbon recommendations, real-world value, and better

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Caveat, Fraunces, Inter } from "next/font/google";
 import { AgeGate } from "@/components/AgeGate";
 import { Analytics } from "@/components/Analytics";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -20,6 +20,17 @@ const fraunces = Fraunces({
   display: "swap",
   weight: ["400", "600", "700"],
   variable: "--font-fraunces",
+});
+
+/**
+ * Handwriting, used only for the struck-through annotation in the hero. Loaded
+ * as a variable so nothing else can reach for it by accident.
+ */
+const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["600"],
+  variable: "--font-caveat",
 });
 
 export const metadata: Metadata = {
@@ -68,7 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-age-gate="pending"
       suppressHydrationWarning
-      className={`${inter.variable} ${fraunces.variable}`}
+      className={`${inter.variable} ${fraunces.variable} ${caveat.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: AGE_GATE_BOOTSTRAP }} />
