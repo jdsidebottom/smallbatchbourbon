@@ -10,8 +10,8 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 | M1 | Design system, 21+ gate, landing page, Weekly Pour, legal shell, analytics, SEO | Done |
 | M2 | Supabase schema/RLS, admin auth, bottle CRUD, media, sources, What We'd Pay thresholds, completeness | Done |
 | M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
-| M4 | `/what-wed-pay` search and Liquor Store Mode | Next |
-| M5 | Buying-guide builder, Gear/Learn article types, internal linking | — |
+| M4 | `/what-wed-pay` search and Liquor Store Mode | Done |
+| M5 | Buying-guide builder, Gear/Learn article types, internal linking | Next |
 | M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | — |
 
 ## Stack
@@ -125,6 +125,11 @@ non-production database.
   must be active and published, so deactivating a merchant kills its links
   site-wide at once. Click logging records no IP, no user agent, and only a
   same-origin pathname.
+- **Liquor Store Mode** — `/at-the-store`. The full price ladder ships with each
+  search result, so the verdict is computed on the device the instant the
+  shopper stops typing rather than costing a round trip in an aisle with one bar
+  of signal. Alternatives are fetched lazily and shown only when the verdict is
+  Fair or worse.
 - **Search** — a trigger-maintained tsvector (which includes the brand name, so
   "Weller" finds every Weller bottle) plus a trigram index on the name for
   prefix and near-miss autocomplete.
