@@ -65,13 +65,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: AGE_GATE_BOOTSTRAP }} />
       </head>
       <body className="min-h-dvh antialiased">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-100 focus:rounded-full focus:bg-amber focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink"
+        <PublicShell
+          header={<SiteHeader />}
+          footer={<SiteFooter />}
+          gate={<AgeGate />}
+          skipLink={
+            // Inside the shell so it is inert along with everything else while
+            // the age gate is up.
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-100 focus:rounded-full focus:bg-amber focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink"
+            >
+              Skip to content
+            </a>
+          }
         >
-          Skip to content
-        </a>
-        <PublicShell header={<SiteHeader />} footer={<SiteFooter />} gate={<AgeGate />}>
           {children}
         </PublicShell>
         <Analytics />
