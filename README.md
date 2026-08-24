@@ -12,7 +12,7 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 | M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
 | M4 | `/what-wed-pay` search and Liquor Store Mode | Done |
 | M5 | Buying-guide builder, guide pages, Gear/Learn article types, internal linking | Done |
-| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | Next |
+| M6 | Performance, accessibility, security review, analytics QA, backup/restore docs | In progress |
 
 ## Stack
 
@@ -184,6 +184,18 @@ non-production database.
 9. **Guide pick titles are 25px tall.** The card heading link clears WCAG 2.5.8
    (24×24) but not the AAA 44×44 target, and each card carries a full-height
    "Full review" link to the same place. Revisit in the M6 accessibility pass.
+
+## Operations and security
+
+- [`docs/operations.md`](docs/operations.md) — environments, deployment,
+  migrations, backup, restore and rollback, plus the schema traps that have
+  already caused real bugs here.
+- [`docs/security-review.md`](docs/security-review.md) — PRD §18 item by item,
+  with how each was checked and what remains open.
+
+CI (`.github/workflows/ci.yml`) runs typecheck, lint, tests, a build with no
+Supabase credentials, a blocking production dependency audit, and a
+committed-secret check.
 
 ## Scripts
 
