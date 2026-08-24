@@ -199,7 +199,7 @@ export async function updateGuideItem(
 }
 
 export async function deleteGuideItem(articleId: string, itemId: string): Promise<ActionResult> {
-  await requireAdmin("contributor");
+  const identity = await requireAdmin("contributor");
   if (!uuid.safeParse(itemId).success) return fail("Unknown pick.");
 
   const supabase = createAdminClient();
@@ -213,7 +213,7 @@ export async function deleteGuideItem(articleId: string, itemId: string): Promis
 
   // Deleting from the middle leaves a gap in the ranks. Close it, so the
   // numbering an editor sees always matches the order the guide renders in.
-  await renumber(articleId);
+  await renumber(articleId, identity.userId);
   await revalidateFromId(articleId);
   return ok("Pick removed.");
 }
@@ -223,7 +223,7 @@ export async function moveGuideItem(
   itemId: string,
   direction: "up" | "down",
 ): Promise<ActionResult> {
-  await requireAdmin("contributor");
+  const identity = await requireAdmin("contributor");
   if (!uuid.safeParse(articleId).success || !uuid.safeParse(itemId).success) {
     return fail("Unknown pick.");
   }
@@ -249,6 +249,7 @@ export async function moveGuideItem(
   const { error: rpcError } = await supabase.rpc("reorder_guide_items", {
     p_article_id: articleId,
     p_item_ids: ids,
+    p_actor: identity.userId,
   });
 
   if (rpcError) return fail(friendly(rpcError.message));
@@ -258,7 +259,7 @@ export async function moveGuideItem(
 }
 
 /** Closes gaps left by a deletion, preserving the current order. */
-async function renumber(articleId: string) {
+async function renumber(articleId: string, actorId: string) {
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("guide_items")
@@ -269,7 +270,11 @@ async function renumber(articleId: string) {
   const ids = (data ?? []).map((row) => (row as { id: string }).id);
   if (ids.length === 0) return;
 
-  await supabase.rpc("reorder_guide_items", { p_article_id: articleId, p_item_ids: ids });
+  await supabase.rpc("reorder_guide_items", {
+    p_article_id: articleId,
+    p_item_ids: ids,
+    p_actor: actorId,
+  });
 }
 
 // -------------------------------------------------------------- sources ----
