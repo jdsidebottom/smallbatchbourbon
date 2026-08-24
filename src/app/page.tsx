@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HeroBackdrop } from "@/components/HeroBackdrop";
 import { JsonLd } from "@/components/JsonLd";
 import { websiteJsonLd } from "@/lib/structured-data";
 import Link from "next/link";
@@ -63,14 +64,7 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-ink-line">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 90% at 50% -10%, rgba(224,163,60,0.22) 0%, rgba(224,163,60,0.06) 38%, transparent 70%)",
-          }}
-        />
+        <HeroBackdrop />
         <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-20 sm:pt-24 sm:pb-28">
           <p className="eyebrow">Bourbon, without the theatrics</p>
           <h1 className="mt-5 max-w-3xl text-[2.6rem] leading-[1.05] text-cream sm:text-6xl lg:text-7xl">

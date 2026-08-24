@@ -9,6 +9,23 @@ export const site = {
 } as const;
 
 /**
+ * Optional home-page hero photograph.
+ *
+ * `null` keeps the original CSS-only hero exactly as it was. To add a
+ * photograph, drop the file in `public/` and set:
+ *
+ *     export const heroImage = { src: "/hero.jpg" };
+ *
+ * Brand assets live in the repo rather than Supabase Storage: they are part of
+ * the build, and a rollback should restore the artwork that matched it.
+ *
+ * `position` is any Tailwind object-position class, for when the interesting
+ * part of the photograph is not the middle — e.g. "object-[70%_center]" to keep
+ * a bottle on the right in frame as the viewport narrows.
+ */
+export const heroImage: { src: string; position?: string } | null = null;
+
+/**
  * The What We'd Pay verdict ladder (PRD §9). Editorial value bands — not a
  * claim of real-time market pricing.
  */
