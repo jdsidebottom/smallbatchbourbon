@@ -71,10 +71,7 @@ export default function HomePage() {
           <h1 className="mt-5 max-w-3xl text-[2.6rem] leading-[1.05] text-cream sm:text-6xl lg:text-7xl">
             Drink smarter.
             <br />
-            {/* Stepped in by one capital, so "Ignore" begins under the "r" of
-                "Drink". Measured: the D is 0.77em wide at every size, so an em
-                indent holds the alignment across breakpoints. */}
-            <span className="ml-[0.77em] inline-block text-amber">Ignore the noise.</span>
+            <span className="text-amber">Ignore the noise.</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream-dim">
             Straightforward bourbon recommendations, real-world value, and better
