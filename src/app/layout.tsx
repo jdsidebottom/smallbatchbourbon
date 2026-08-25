@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Caveat, Fraunces, Inter } from "next/font/google";
+import { Caveat, Inter, Playfair_Display } from "next/font/google";
 import { AgeGate } from "@/components/AgeGate";
 import { Analytics } from "@/components/Analytics";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -15,11 +15,13 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const fraunces = Fraunces({
+// Brand guidelines §4: Playfair Display for display and headings, Inter for
+// body and UI.
+const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "600", "700"],
-  variable: "--font-fraunces",
+  variable: "--font-playfair",
 });
 
 /**
@@ -79,7 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-age-gate="pending"
       suppressHydrationWarning
-      className={`${inter.variable} ${fraunces.variable} ${caveat.variable}`}
+      className={`${inter.variable} ${playfair.variable} ${caveat.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: AGE_GATE_BOOTSTRAP }} />

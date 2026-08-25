@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BrandMark } from "@/components/BrandMark";
 import { Wordmark } from "@/components/Wordmark";
 import { track } from "@/lib/analytics";
 
@@ -37,9 +38,12 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Link
           href="/"
-          className="flex min-h-11 items-center py-2 text-cream"
+          className="flex min-h-11 items-center gap-2.5 py-2 text-cream"
           aria-label="Small Batch Bourbon — home"
         >
+          {/* priority: the mark is in the header of every page, so it should not
+              wait behind lazy loading. */}
+          <BrandMark size={40} priority />
           <Wordmark className="text-lg" />
         </Link>
 

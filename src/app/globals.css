@@ -26,12 +26,21 @@
   --color-verdict-maybe: #e07f3c;
   --color-verdict-walk: #d9584f;
 
+  /* Approved brand palette (Brand Guidelines §3). New Gold is already the
+     site's --color-amber, unchanged. The rest are added so brand colours are
+     reachable by name rather than being re-typed as literals. */
+  --color-charcoal: #141414;
+  --color-barrel: #3b2a1e;
+  --color-bourbon-amber: #b5632a;
+  --color-aged-cream: #e6d6b8;
+  --color-warm-ivory: #f7f3ec;
+
   /* Editor's-pen red for the hero annotation. Deliberately its own token rather
      than reusing verdict-walk: that red means "Walk Away" in the product, and
      retuning one should never silently retune the other. 5.88:1 on ink. */
   --color-marker: #ef5a4c;
 
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
   --font-hand: var(--font-caveat), "Segoe Script", "Bradley Hand", cursive;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }

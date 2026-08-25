@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/BrandMark";
 import { Wordmark } from "@/components/Wordmark";
 import { site } from "@/lib/site";
 
@@ -35,7 +36,10 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-5 py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Wordmark className="text-lg text-cream" />
+            <span className="flex items-center gap-2.5">
+              <BrandMark size={40} />
+              <Wordmark className="text-lg text-cream" />
+            </span>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-muted">
               {site.tagline} Practical bourbon buying guidance, real-world value, and
               better alternatives.

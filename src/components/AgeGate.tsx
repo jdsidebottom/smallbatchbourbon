@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AGE_GATE_COOKIE, AGE_GATE_MAX_AGE_DAYS } from "@/lib/age-gate";
 import { track } from "@/lib/analytics";
+import { BrandMark } from "@/components/BrandMark";
 import { Wordmark } from "@/components/Wordmark";
 
 /**
@@ -70,6 +71,7 @@ export function AgeGate() {
         ref={dialogRef}
         className="w-full max-w-md text-center"
       >
+        <BrandMark size={88} priority className="mx-auto mb-6" />
         <Wordmark className="mx-auto mb-10 h-auto w-52 text-cream" />
 
         {/* Not an <h1>: the gate ships in the DOM on every page, so its title
