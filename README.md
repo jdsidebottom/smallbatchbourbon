@@ -221,6 +221,26 @@ non-production database.
     Chromium engine. PRD §22 asks for current iOS Safari and Android Chrome,
     which needs real hardware.
 
+## Brand
+
+Built to *Small Batch Bourbon Brand Guidelines v1.0* (August 2026). The approved
+Option C circular sBb mark, Playfair Display for display and headings, Inter for
+body and UI, and the approved palette as named tokens. New Gold `#E0A33C` is the
+site's `--color-amber` exactly.
+
+**One deliberate deviation, decided 2026-08-24.** Guidelines §6 describes a light
+layout — "generous ivory space, charcoal text, amber actions". This site is
+charcoal-grounded with cream type throughout. That is a deliberate choice, not
+drift: §3 sanctions Charcoal for "dark backgrounds, navigation", and the dark
+treatment suits a site read one-handed in a badly lit liquor aisle.
+
+`--color-warm-ivory` and `--color-aged-cream` are therefore defined but largely
+unused. They are kept so the palette is complete and a light surface can be
+built without re-deriving it.
+
+**Do not "fix" the site to match §6 without asking.** Flipping the ground is a
+full palette inversion across every page, card, form and the admin.
+
 ## Operations and security
 
 - [`docs/operations.md`](docs/operations.md) — environments, deployment,
