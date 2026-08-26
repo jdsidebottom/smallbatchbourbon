@@ -246,6 +246,9 @@ full palette inversion across every page, card, form and the admin.
 - [`docs/operations.md`](docs/operations.md) — environments, deployment,
   migrations, backup, restore and rollback, plus the schema traps that have
   already caused real bugs here.
+- [`docs/newsletter-setup.md`](docs/newsletter-setup.md) — Beehiiv setup
+  checklist: which plan, what to configure, and the abuse problem to solve
+  before the keys go live.
 - [`docs/security-review.md`](docs/security-review.md) — PRD §18 item by item,
   with how each was checked and what remains open.
 

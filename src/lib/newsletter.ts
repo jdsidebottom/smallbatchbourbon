@@ -5,7 +5,25 @@
  * touching routes or components. When credentials are absent the layer reports
  * `not_configured` rather than pretending a subscription succeeded.
  */
-export type SubscribeSource = "landing_hero" | "landing_weekly_pour" | "find_my_next_pour" | "footer";
+
+/**
+ * The signup points on the site. Sent to Beehiiv as the `signup_source` custom
+ * field and as utm_medium, which is what makes them segmentable there —
+ * Beehiiv's create-subscription endpoint takes custom fields, not arbitrary
+ * tags.
+ *
+ * `find_my_next_pour` matters most: those people asked to hear about a feature
+ * that does not exist yet, and need to be reachable separately when it ships
+ * (PRD §7.2).
+ */
+const SIGNUP_SOURCES = [
+  "landing_hero",
+  "landing_weekly_pour",
+  "find_my_next_pour",
+  "footer",
+] as const;
+
+export type SubscribeSource = (typeof SIGNUP_SOURCES)[number];
 
 export type SubscribeResult =
   | { status: "subscribed" }
@@ -13,12 +31,6 @@ export type SubscribeResult =
   | { status: "not_configured" }
   | { status: "provider_error"; detail: string };
 
-const SOURCE_TAGS: Record<SubscribeSource, string[]> = {
-  landing_hero: ["landing-page", "weekly-pour"],
-  landing_weekly_pour: ["landing-page", "weekly-pour"],
-  find_my_next_pour: ["landing-page", "find-my-next-pour-interest"],
-  footer: ["landing-page", "weekly-pour", "footer"],
-};
 
 export function isValidEmail(value: unknown): value is string {
   return (
@@ -29,7 +41,7 @@ export function isValidEmail(value: unknown): value is string {
 }
 
 export function isSubscribeSource(value: unknown): value is SubscribeSource {
-  return typeof value === "string" && value in SOURCE_TAGS;
+  return typeof value === "string" && (SIGNUP_SOURCES as readonly string[]).includes(value);
 }
 
 export async function subscribe(
@@ -76,6 +88,3 @@ export async function subscribe(
   return { status: "provider_error", detail: `${response.status} ${detail.slice(0, 200)}` };
 }
 
-export function tagsForSource(source: SubscribeSource): string[] {
-  return SOURCE_TAGS[source];
-}
