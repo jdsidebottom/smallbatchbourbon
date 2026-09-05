@@ -186,38 +186,44 @@ non-production database.
 1. **Legal copy needs review.** The policy pages are complete, accurate drafts
    written against what the site actually does — have counsel review them for the
    jurisdictions and affiliate programs you actually use.
-2. **Replace the demo bottle.** The What We'd Pay preview on the landing page uses
+2. **Turn indexing on.** Search engines are blocked until
+   `NEXT_PUBLIC_ALLOW_INDEXING=true` is set in Vercel — both a `noindex` meta tag
+   and an `X-Robots-Tag` header, and the sitemap is withheld. It fails closed so
+   a deployment carrying demo bottles cannot be indexed by accident; that means
+   launch day includes setting it, or the real site stays invisible. Do it after
+   the demo teardown below, not before.
+3. **Replace the demo bottle.** The What We'd Pay preview on the landing page uses
    a deliberately fictional "Example Bourbon", labeled *Example only / Not live
    data*. Swap in a real published bottle record once M3 ships. Never publish an
    invented MSRP or verdict for a real product.
-3. **Newsletter credentials.** Create the Beehiiv publication, add the keys, and
+4. **Newsletter credentials.** Create the Beehiiv publication, add the keys, and
    confirm a live subscription lands with the right source tag.
-4. **Logo and hero imagery.** The wordmark in `src/components/Wordmark.tsx` is a
+5. **Logo and hero imagery.** The wordmark in `src/components/Wordmark.tsx` is a
    typographic placeholder. Hero treatment is CSS-only — no stock photography has
    been invented or licensed.
-5. **CSP hardening.** Move to nonce- or hash-based `script-src` when the app takes
+6. **CSP hardening.** Move to nonce- or hash-based `script-src` when the app takes
    on dynamic rendering.
-6. **Rate limiting** is in-process. Move to a shared store before running on more
+7. **Rate limiting** is in-process. Move to a shared store before running on more
    than one instance.
-7. **Backup and restore** procedure needs documenting before material production
+8. **Backup and restore** procedure needs documenting before material production
    editorial data accumulates (M6).
-8. **Supabase advisor warnings.** `pg_trgm` is installed in the `public` schema,
+9. **Supabase advisor warnings.** `pg_trgm` is installed in the `public` schema,
    and leaked-password protection is disabled on Auth. Neither is exploitable as
    configured; both are M6 hardening items.
-9. **Guide pick titles are ~26px tall** on a single line. The card heading link
+10. **Guide pick titles are ~26px tall** on a single line. The card heading link
    clears WCAG 2.5.8 (24×24) but not the AAA 44×44 target; each card carries a
    full-height "Full review" link to the same destination, and the remaining
    sub-44px targets are all inline links inside sentences, which 2.5.8 exempts.
-10. **Enable admin MFA.** Supabase Auth supports TOTP and it is currently off.
+11. **Enable admin MFA.** Supabase Auth supports TOTP and it is currently off.
     With one account able to publish and delete editorial content this is the
     highest-value remaining hardening step. Leaked-password protection is off
     too, and is the same one-click area.
-11. **Stand up a separate production Supabase project.** Preview and production
+12. **Stand up a separate production Supabase project.** Preview and production
     must not share one (PRD §23). Only one project exists today, and it holds
     demo content.
-12. **Rehearse a restore** into the preview project once. A backup that has
+13. **Rehearse a restore** into the preview project once. A backup that has
     never been restored is a hypothesis. See `docs/operations.md` §5.
-13. **Cross-browser pass on real devices.** Everything here was verified in a
+14. **Cross-browser pass on real devices.** Everything here was verified in a
     Chromium engine. PRD §22 asks for current iOS Safari and Android Chrome,
     which needs real hardware.
 

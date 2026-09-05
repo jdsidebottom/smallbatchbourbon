@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { PublicShell } from "@/components/PublicShell";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AGE_GATE_BOOTSTRAP } from "@/lib/age-gate";
-import { site } from "@/lib/site";
+import { allowIndexing, site } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -55,7 +55,9 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.tagline}`,
     description: site.description,
   },
-  robots: { index: true, follow: true },
+  robots: allowIndexing
+    ? { index: true, follow: true }
+    : { index: false, follow: false, nocache: true },
   // Search Console verification. A DNS TXT record is preferable where DNS is
   // managed at Cloudflare; this is the fallback and is omitted when unset.
   ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
