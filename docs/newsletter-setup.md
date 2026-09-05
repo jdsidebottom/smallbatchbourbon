@@ -66,23 +66,85 @@ Automations are not on Launch; that is the main reason you would upgrade.
       your real list.
 - [ ] Redeploy, then subscribe once from the live site to confirm.
 
-## 5. Deal with abuse before you rely on it
+## 5. Turn on Turnstile before the keys go live
 
-Until the keys are set, the endpoint returns `not_configured` and a bot can
-achieve nothing. **The moment they are live, abusive traffic becomes real API
+Until the Beehiiv keys are set, the endpoint returns `not_configured` and a bot
+can achieve nothing. **The moment they are live, abusive traffic becomes real API
 calls against your subscriber list.**
 
-The rate limit in `src/app/api/newsletter/route.ts` is an in-process counter:
-five per minute per IP, held in memory. On Vercel's serverless runtime each
-request may hit a fresh instance with an empty counter, so it degrades to
-almost nothing. The honeypot still catches naive bots; neither stops someone
-generating unique addresses.
+Two things that look like protection are not:
 
-- [ ] Pick one: a Cloudflare firewall rate-limit rule on `/api/newsletter`
-      (no code), Cloudflare Turnstile on the form, or move the counter to a
-      shared store such as Upstash.
-- [ ] Turning on double opt-in in step 1 substantially reduces the damage a
-      successful flood can do.
+- The rate limit in `src/app/api/newsletter/route.ts` is an in-process counter.
+  On Vercel each request may hit a fresh instance with an empty counter, so it
+  degrades to almost nothing.
+- The Cloudflare rate-limiting rule `newsletter-signup-flood` only works while
+  traffic is proxied. Under the grey-cloud DNS plan it goes inert the moment the
+  domain points at Vercel.
+
+Neither ever stopped the attack that matters: a flood of *unique* addresses,
+which looks like ordinary traffic to a per-IP counter but pads the list with
+unreachable subscribers and drags deliverability down for the real ones.
+Cloudflare Turnstile is wired into the form and the route for exactly this. It
+is free and unmetered, and unlike the firewall rule it keeps working after the
+DNS cutover.
+
+### Create the widget
+
+- [ ] Cloudflare dashboard → Turnstile → Add widget.
+- [ ] Hostnames: `smallbatchbourbon.com` **and** `localhost` (localhost lets you
+      test locally against the real widget rather than the test keys).
+- [ ] Widget mode: **Managed**.
+- [ ] **Leave Pre-Clearance off.** This is Cloudflare's default and it must stay
+      that way. With pre-clearance on, Turnstile issues a `cf_clearance` cookie,
+      which breaks the site's "exactly one cookie" statement in the privacy
+      policy and would require a consent banner on top of the 21+ gate. With it
+      off, Turnstile issues a one-time token and sets nothing.
+- [ ] Copy the **site key** and the **secret key**.
+
+### Wire it up
+
+- [ ] Add to `.env.local`:
+      ```
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x...
+      TURNSTILE_SECRET_KEY=0x...
+      ```
+- [ ] Add both in Vercel → Settings → Environment Variables. The site key is
+      public by design and needs the `NEXT_PUBLIC_` prefix; **the secret key must
+      never have it.**
+- [ ] **Set both or neither.** Leave both unset and verification is skipped
+      entirely, which is what keeps local development and CI frictionless. Set
+      only the secret and every real signup is rejected, because no widget exists
+      to mint a token.
+
+### Behaviour worth knowing before it surprises you
+
+- The widget is invisible in normal use (`appearance: "interaction-only"`). It
+  only draws a checkbox when Cloudflare actually wants one.
+- Tokens are single-use and expire after five minutes. The form resets the
+  widget after every submit; without that a second attempt fails as
+  `timeout-or-duplicate` and looks like the visitor's fault.
+- **If Cloudflare's siteverify is unreachable, the route fails open** and logs
+  `turnstile unavailable, failing open`. A Cloudflare incident should not become
+  a signup outage. Grep for that string if signups spike oddly.
+- A rejection logs `turnstile rejected a submission` with the error code, and
+  the visitor sees a generic retryable message.
+
+### Test it with Cloudflare's test keys
+
+These are documented, public, and safe to commit to a scratch file — never to
+`.env.local` long-term:
+
+| Purpose | Site key | Secret key |
+| --- | --- | --- |
+| Always passes | `1x00000000000000000000AA` | `1x0000000000000000000000000000000AA` |
+| Always blocks | `2x00000000000000000000AB` | `2x0000000000000000000000000000000AA` |
+
+- [ ] With the passing pair, submit the form. You should reach the Beehiiv layer
+      — a 503 `not_configured` before the keys are set, a real subscribe after.
+- [ ] With the blocking secret, submit again. Expect **403** and
+      `verification_failed`.
+- [ ] Turning on double opt-in in step 1 reduces the damage of anything that
+      still gets through.
 
 What it costs you if you skip this: a list padded with fake addresses, a
 collapsing open rate, and — if enough of them bounce — worse deliverability for
@@ -138,6 +200,9 @@ otherwise. PRD §7.2 asks for exactly this.
 | 404 from Beehiiv | Publication ID wrong — it starts with `pub_` |
 | Subscriber appears with no source | `custom_fields` not enabled on the publication |
 | Success event never fires | The request is failing before Beehiiv returns 2xx; check the route's server logs |
+| Form says "could not verify" every time | Site key and secret are from different widgets, or the hostname is not on the widget's allow-list |
+| Widget never appears and signups still work | Expected — interaction-only mode stays invisible unless Cloudflare wants an interaction |
+| Signups suddenly bypass Turnstile | `TURNSTILE_SECRET_KEY` is unset in that environment; verification is skipped by design |
 
 In development the API's real error message is surfaced in the form. In
 production the message is deliberately generic, so use the server logs.

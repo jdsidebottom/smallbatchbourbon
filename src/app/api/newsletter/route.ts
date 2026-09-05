@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { isSubscribeSource, isValidEmail, subscribe } from "@/lib/newsletter";
+import { isTurnstileConfigured, verifyTurnstile } from "@/lib/turnstile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
  * Best-effort in-process rate limit for the only public write endpoint on the
- * site. Replace with a shared store (Upstash/Supabase) when the app runs on
- * more than one instance.
+ * site. On Vercel each request may land on a fresh instance with an empty
+ * counter, so this stops a naive loop from one client and little more — it is a
+ * courtesy, not the defence. Turnstile below is the defence.
  */
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 5;
@@ -48,11 +50,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: "invalid_request" }, { status: 400 });
   }
 
-  const body = payload as { email?: unknown; source?: unknown; company?: unknown };
+  const body = payload as {
+    email?: unknown;
+    source?: unknown;
+    company?: unknown;
+    turnstileToken?: unknown;
+  };
 
   // Honeypot: real people never fill a visually hidden field.
   if (typeof body.company === "string" && body.company.length > 0) {
     return NextResponse.json({ code: "subscribed" }, { status: 200 });
+  }
+
+  // Turnstile runs before validation: an unverified request should not get to
+  // probe which addresses the validator accepts, and should never cost an
+  // outbound call against the Beehiiv list.
+  if (isTurnstileConfigured()) {
+    const verdict = await verifyTurnstile(body.turnstileToken, clientKey(request));
+
+    if (verdict.status === "failed") {
+      console.warn("[newsletter] turnstile rejected a submission:", verdict.codes.join(","));
+      return NextResponse.json(
+        { code: "verification_failed", message: "We could not verify that request. Please try again." },
+        { status: 403 },
+      );
+    }
+
+    // Cloudflare being down must not take signups down with it. Failing open is
+    // deliberate: the honeypot and rate limit still apply, and a short window of
+    // weaker filtering costs less than turning real subscribers away. Logged as
+    // an error so the window is visible rather than silent.
+    if (verdict.status === "unavailable") {
+      console.error("[newsletter] turnstile unavailable, failing open:", verdict.detail);
+    }
   }
 
   if (!isValidEmail(body.email)) {

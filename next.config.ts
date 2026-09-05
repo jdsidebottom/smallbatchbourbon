@@ -26,11 +26,25 @@ const csp = [
   "object-src 'none'",
   // React's development build needs eval() for its debugging features. It is
   // never permitted in production.
-  // Vercel Web Analytics is served same-origin from /_vercel/insights, so it
-  // needs no exception here. Only Cloudflare's beacon is third-party.
+  // Vercel Web Analytics is served same-origin in production, so it needs no
+  // exception there. The path is NOT /_vercel/insights: the build injects a
+  // per-project random prefix (REACT_APP_VERCEL_OBSERVABILITY_BASEPATH, e.g.
+  // /2dab36e5d392dd39/script.js) so ad blockers cannot pattern-match it. Grep
+  // production for /_vercel/insights and you will wrongly conclude analytics is
+  // dead; look for a same-origin /<hash>/script.js plus POSTs to /<hash>/view.
+  // In dev there is no such prefix and the package loads its debug build from
+  // va.vercel-scripts.com, so that host is allowed in development only — it
+  // logs events to the console and sends nothing, which is how you verify event
+  // wiring locally without writing to production analytics.
   `script-src 'self' 'unsafe-inline'${
-    isProd ? "" : " 'unsafe-eval'"
-  } https://static.cloudflareinsights.com`,
+    isProd ? "" : " 'unsafe-eval' https://va.vercel-scripts.com"
+  } https://static.cloudflareinsights.com https://challenges.cloudflare.com`,
+  // frame-src is not otherwise set and would fall back to default-src 'self',
+  // which silently blanks the Turnstile widget. Turnstile runs with
+  // pre-clearance off, so it issues a one-time token and sets no cf_clearance
+  // cookie — that is what keeps the no-consent-banner position intact. Do not
+  // enable pre-clearance without also building consent.
+  "frame-src 'self' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   // Bottle images are served from the public Supabase Storage bucket.
   `img-src 'self' data: blob:${
@@ -39,7 +53,7 @@ const csp = [
   "font-src 'self' data:",
   // ws: is the Next dev-server hot-reload socket; Chrome does not treat it as
   // covered by 'self'.
-  `connect-src 'self' https://cloudflareinsights.com${
+  `connect-src 'self' https://cloudflareinsights.com https://challenges.cloudflare.com${
     supabase.connectSrc.length ? ` ${supabase.connectSrc.join(" ")}` : ""
   }${isProd ? "" : " ws://localhost:* http://localhost:*"}`,
   // Would rewrite http://localhost to https during local development.

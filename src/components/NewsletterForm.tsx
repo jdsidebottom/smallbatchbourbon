@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 import { track } from "@/lib/analytics";
+import { TurnstileContainer, useTurnstile } from "@/components/TurnstileWidget";
 import type { SubscribeSource } from "@/lib/newsletter";
 
 type State =
@@ -32,6 +33,7 @@ export function NewsletterForm({
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
+  const turnstile = useTurnstile("newsletter_signup");
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,16 +48,37 @@ export function NewsletterForm({
     setState({ kind: "loading" });
     track("newsletter_signup_attempt", { source });
 
+    // Usually already resolved: the widget is invisible in interaction-only
+    // mode and issues its token well before anyone finishes typing. The wait
+    // only bites when Cloudflare wants an interaction, or when the script was
+    // blocked — in which case a null token comes back and the server, the only
+    // side that gets a vote, rejects it.
+    const turnstileToken = turnstile.enabled ? await turnstile.getToken() : null;
+
+    if (turnstile.enabled && turnstileToken === null) {
+      turnstile.reset();
+      setState({
+        kind: "error",
+        message: "We could not verify that request. Please try again.",
+      });
+      return;
+    }
+
     try {
       const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, source, company }),
+        body: JSON.stringify({ email: trimmed, source, company, turnstileToken }),
       });
       const body = (await response.json().catch(() => ({}))) as {
         code?: string;
         message?: string;
       };
+
+      // Turnstile tokens are single-use and expire after five minutes. Whatever
+      // the outcome, the spent one must be replaced — otherwise a second attempt
+      // fails as timeout-or-duplicate and looks like the visitor is at fault.
+      turnstile.reset();
 
       if (body.code === "subscribed") {
         setState({ kind: "success" });
@@ -77,6 +100,7 @@ export function NewsletterForm({
         message: body.message ?? "Signup isn't available right now. Please try again later.",
       });
     } catch {
+      turnstile.reset();
       setState({
         kind: "error",
         message: "We couldn't reach the server. Check your connection and try again.",
@@ -131,6 +155,8 @@ export function NewsletterForm({
           {state.kind === "loading" ? "Signing up…" : cta}
         </button>
       </div>
+
+      <TurnstileContainer containerRef={turnstile.containerRef} enabled={turnstile.enabled} />
 
       <p
         id={statusId}
