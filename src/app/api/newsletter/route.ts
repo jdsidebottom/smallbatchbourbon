@@ -48,6 +48,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: "invalid_request" }, { status: 400 });
   }
 
+  // `request.json()` happily returns null, a number or an array. Reading a
+  // property off null throws, turning a malformed request into a 500.
+  if (payload === null || typeof payload !== "object" || Array.isArray(payload)) {
+    return NextResponse.json({ code: "invalid_request" }, { status: 400 });
+  }
+
   const body = payload as { email?: unknown; source?: unknown; company?: unknown };
 
   // Honeypot: real people never fill a visually hidden field.
