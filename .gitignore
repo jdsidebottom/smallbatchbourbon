@@ -44,3 +44,6 @@ next-env.d.ts
 
 # vendored agent skills (restorable from skills-lock.json)
 .agents/
+
+# vendored agent skills reachable via the .claude/skills junction
+.claude/skills/
