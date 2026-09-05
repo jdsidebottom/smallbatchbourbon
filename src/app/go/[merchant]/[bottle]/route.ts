@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { tryCreateAdminClient } from "@/lib/supabase/admin";
 import { buildDestination, isSafeSlug, sanitizeOriginPath } from "@/lib/domain/affiliate";
 
@@ -57,14 +57,24 @@ export async function GET(
   if (!destination) return notFound();
 
   // Click metadata is deliberately minimal: no IP, no user agent, nothing that
-  // identifies a person. Logging must never block or fail the redirect.
-  const { error: logError } = await supabase.from("affiliate_clicks").insert({
-    retailer_id: row.retailers.id,
-    bottle_id: row.bottles.id,
-    origin_path: sanitizeOriginPath(request.headers.get("referer"), request.url),
-  });
+  // identifies a person. Logging must never block or fail the redirect, so it
+  // runs after the response is on its way — awaiting it here put a second
+  // database round trip between the shopper and the merchant.
+  const originPath = sanitizeOriginPath(request.headers.get("referer"), request.url);
 
-  if (logError) console.error("[affiliate] click log failed:", logError.message);
+  after(async () => {
+    try {
+      const { error: logError } = await supabase.from("affiliate_clicks").insert({
+        retailer_id: row.retailers.id,
+        bottle_id: row.bottles.id,
+        origin_path: originPath,
+      });
+      if (logError) console.error("[affiliate] click log failed:", logError.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "unknown error";
+      console.error("[affiliate] click log failed:", message);
+    }
+  });
 
   const response = NextResponse.redirect(destination, { status: 302 });
   response.headers.set("Cache-Control", "no-store");
