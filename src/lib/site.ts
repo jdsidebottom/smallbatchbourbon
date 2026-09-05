@@ -1,3 +1,18 @@
+/**
+ * Whether search engines may index this deployment.
+ *
+ * Defaults to **no**. The database still holds fictional demo bottles with
+ * invented MSRPs, and the one rule this project does not bend is that we do not
+ * publish invented bourbon facts — least of all into Google's index, where a
+ * page outlives the row behind it.
+ *
+ * Set `NEXT_PUBLIC_ALLOW_INDEXING=true` in Vercel once real content is in and
+ * the demo rows are cleared. It fails closed on purpose: forgetting it costs a
+ * few days of crawling, while the opposite mistake is served to the public and
+ * cached by someone else.
+ */
+export const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
 export const site = {
   name: "Small Batch Bourbon",
   domain: "smallbatchbourbon.com",

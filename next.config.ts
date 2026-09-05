@@ -46,8 +46,13 @@ const csp = [
   ...(isProd ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
+// Mirrors `allowIndexing` in src/lib/site.ts. The meta tag covers HTML; this
+// header also covers sitemap.xml, images and anything else a crawler fetches.
+const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
+  ...(allowIndexing ? [] : [{ key: "X-Robots-Tag", value: "noindex, nofollow" }]),
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
