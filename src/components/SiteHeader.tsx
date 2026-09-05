@@ -18,7 +18,7 @@ const NAV = [
   { label: "Gear", href: "/gear" },
   { label: "Learn", href: "/learn" },
   { label: "Find My Next Pour", href: "/#find-my-next-pour", note: "Coming soon" },
-  { label: "The Weekly Pour", href: "/#weekly-pour" },
+  { label: "Proof and Perspective", href: "/#proof-and-perspective" },
 ];
 
 export function SiteHeader() {

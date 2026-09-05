@@ -44,7 +44,7 @@ export default function AboutPage() {
             everyone wants isn&apos;t on the shelf, or isn&apos;t worth the ask.
           </li>
           <li>
-            <strong>The Weekly Pour.</strong> One useful email a week.
+            <strong>Proof and Perspective.</strong> One useful email a week.
           </li>
         </ul>
 

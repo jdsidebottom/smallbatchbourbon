@@ -7,7 +7,7 @@ to `SmallBatchBourbon_Validation_MVP_PRD.pdf`.
 
 | Milestone | Scope | Status |
 | --- | --- | --- |
-| M1 | Design system, 21+ gate, landing page, Weekly Pour, legal shell, analytics, SEO | Done |
+| M1 | Design system, 21+ gate, landing page, Proof and Perspective, legal shell, analytics, SEO | Done |
 | M2 | Supabase schema/RLS, admin auth, bottle CRUD, media, sources, What We'd Pay thresholds, completeness | Done |
 | M3 | Public bottle pages, search, alternatives, affiliate redirect infrastructure | Done |
 | M4 | `/what-wed-pay` search and Liquor Store Mode | Done |

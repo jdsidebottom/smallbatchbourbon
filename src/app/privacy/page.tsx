@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             records only that the confirmation happened — not your age or date of birth.
           </li>
           <li>
-            <strong>Email address.</strong> If you subscribe to The Weekly Pour, we send
+            <strong>Email address.</strong> If you subscribe to Proof and Perspective, we send
             your email address and the part of the site you signed up from to our email
             provider so they can deliver the newsletter.
           </li>
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
 
         <h2>Your choices</h2>
         <ul>
-          <li>Unsubscribe from any Weekly Pour email using the link in its footer.</li>
+          <li>Unsubscribe from any Proof and Perspective email using the link in its footer.</li>
           <li>
             Ask us to access, correct, or delete the personal information we hold by
             emailing <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.

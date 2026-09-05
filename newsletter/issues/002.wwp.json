@@ -1,0 +1,25 @@
+{
+  "_comment": [
+    "Sidecar for the What We'd Pay block. Build it with:",
+    "    node newsletter/build-wwp.mjs 002",
+    "",
+    "The database is the default. Anything in `overrides` wins; anything left",
+    "out is pulled live. Delete `overrides` entirely for a fully automatic",
+    "block, or set \"mode\": \"manual\" and drop `slug` to write every field by",
+    "hand. The build report prints which fields were pulled and which were",
+    "overridden, and warns when an override has drifted from the database.",
+    "",
+    "Overridable fields: headline, subline, msrp, msrpSource, stealUnder,",
+    "wedPay, fairUnder, maybeUnder, note, url.",
+    "",
+    "If you override `msrp`, give `msrpSource` too — the database's source",
+    "describes its number, not yours."
+  ],
+
+  "mode": "merge",
+  "slug": "example-bourbon-small-batch",
+
+  "overrides": {
+    "note": "Leave this out and the block uses bottle_prices.editorial_note. Set it when the issue needs a different argument than the bottle page makes."
+  }
+}

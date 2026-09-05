@@ -8,7 +8,7 @@ export function InterestButton({
   feature,
   placement,
   children,
-  targetId = "weekly-pour",
+  targetId = "proof-and-perspective",
   variant = "outline",
 }: {
   feature: string;

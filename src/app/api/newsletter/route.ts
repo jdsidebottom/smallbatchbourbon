@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const source = isSubscribeSource(body.source) ? body.source : "landing_weekly_pour";
+  const source = isSubscribeSource(body.source) ? body.source : "landing_proof_and_perspective";
   const result = await subscribe(body.email, source);
 
   switch (result.status) {

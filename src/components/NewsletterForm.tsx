@@ -13,12 +13,12 @@ type State =
   | { kind: "error"; message: string };
 
 /**
- * Weekly Pour capture (PRD §15). Handles loading, success, duplicate,
+ * Proof and Perspective capture (PRD §15). Handles loading, success, duplicate,
  * invalid-email and provider-error states explicitly.
  */
 export function NewsletterForm({
   source,
-  cta = "Get The Weekly Pour",
+  cta = "Get Proof and Perspective",
   placeholder = "you@example.com",
   successMessage = "You're in. Check your inbox to confirm.",
 }: {
@@ -152,6 +152,19 @@ export function NewsletterForm({
             .
           </>
         )}
+      </p>
+
+      {/* Age affirmation at the point of collection. The site-wide 21+ gate
+          already precedes every signup, so this is belt-and-braces — but the
+          spirits industry code (DISCUS) asks for affirmation before any user
+          information is collected, and affiliate compliance reviewers look for
+          it on the form itself rather than inferring it from the gate.
+
+          Deliberately outside the aria-live status region above: a standing
+          notice must not vanish when the form reports success or an error, and
+          must not be announced as if it were a status update. */}
+      <p className="mt-2 text-xs text-cream-muted">
+        By subscribing you confirm that you are 21 or older.
       </p>
     </form>
   );

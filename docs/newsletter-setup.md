@@ -1,4 +1,4 @@
-# The Weekly Pour — Beehiiv setup
+# Proof and Perspective — Beehiiv setup
 
 What to do after creating a Beehiiv account, in order. Written against the
 integration in `src/lib/newsletter.ts`, which calls exactly one endpoint:
@@ -13,7 +13,7 @@ Automations are not on Launch; that is the main reason you would upgrade.
 
 ## 1. Create the publication
 
-- [ ] Create the publication and name it **The Weekly Pour**.
+- [ ] Create the publication and name it **Proof and Perspective**.
 - [ ] Set the sending name and reply-to address. Use a real, monitored address —
       a no-reply address hurts deliverability and is a bad look for a brand whose
       whole promise is being straight with people.
@@ -46,7 +46,7 @@ Automations are not on Launch; that is the main reason you would upgrade.
 - [ ] Subscribe with your own address from the home page.
 - [ ] Confirm the subscriber appears in Beehiiv within a few seconds.
 - [ ] Confirm the `signup_source` custom field on that subscriber reads
-      `landing_weekly_pour`.
+      `landing_proof_and_perspective`.
 - [ ] Subscribe again with the same address. The form should say you are already
       subscribed rather than erroring — the API returns 409 and the code handles
       it deliberately.
@@ -95,7 +95,7 @@ Every signup carries a `signup_source` custom field. Four values exist:
 | Value | Where it comes from |
 | --- | --- |
 | `landing_hero` | hero signup |
-| `landing_weekly_pour` | the main Weekly Pour block |
+| `landing_proof_and_perspective` | the main Proof and Perspective block |
 | `find_my_next_pour` | the Find My Next Pour teaser |
 | `footer` | footer signup |
 

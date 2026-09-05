@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 360" role="img">
+      <title>Proof &amp; Perspective signature-glass dark</title>
+      
+    <g transform="translate(0 175) scale(1.0)">
+      <g transform="translate(90 0) scale(.92 1)"><text x="0" y="0" fill="#FFFFFF" font-family="Cormorant Garamond" font-size="144" font-weight="300" letter-spacing="1">PROOF</text></g>
+      <text x="550" y="0" fill="#B0642E" font-family="Cormorant Garamond" font-size="144" font-weight="400">&amp;</text>
+      <text x="660" y="0" fill="#FFFFFF" font-family="Oswald" font-size="128" font-weight="700" letter-spacing="1">PERSPECTIVE</text>
+    </g>
+      <line x1="80" y1="264" x2="285" y2="264" stroke="#B0642E" stroke-width="4"/>
+      <text x="315" y="274" fill="#B0642E" font-family="Inter" font-size="31" font-weight="500" letter-spacing="5">DRINK SMARTER.</text>
+      
+    <g transform="translate(700 265) scale(0.72)">
+      
+      <path d="M -20 -52 C -14 -44 -17 -28 -24 -11 C -34 14 -30 44 -13 53 L 13 53 C 30 44 34 14 24 -11 C 17 -28 14 -44 20 -52" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+      <ellipse cx="0" cy="-52" rx="20" ry="5" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+      <path d="M -27 20 Q 0 30 27 20 L 23 35 Q 0 44 -23 35 Z" fill="#B0642E" opacity="0.96"/>
+      <path d="M -27 20 Q 0 29 27 20" fill="none" stroke="#FFFFFF" stroke-width="2.2"/>
+      <path d="M -13 53 L -16 62 L 16 62 L 13 53 M -20 64 Q 0 69 20 64" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M -12 -39 C -15 -18 -25 2 -21 27" fill="none" stroke="#FFFFFF" stroke-width="1.8" opacity="0.6"/>
+    </g>
+      <text x="790" y="274" fill="#B0642E" font-family="Inter" font-size="31" font-weight="500" letter-spacing="5">IGNORE THE NOISE.</text>
+      <line x1="1118" y1="264" x2="1320" y2="264" stroke="#B0642E" stroke-width="4"/>
+    </svg>

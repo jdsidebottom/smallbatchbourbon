@@ -1,0 +1,101 @@
+{
+  "_comment": [
+    "Feeds the aggregator reads. Every URL here was checked and returned items",
+    "on 2026-09-01; a feed that starts failing is reported by name at the end of",
+    "each fetch rather than failing the run.",
+    "",
+    "  weight  1-3, how much this outlet's byline is worth before keywords.",
+    "          It is a tiebreaker, not a verdict: a 1 with the right headline",
+    "          outranks a 3 with the wrong one.",
+    "  enabled optional, defaults true. Set false to mute a feed without",
+    "          losing the URL.",
+    "",
+    "Breaking Bourbon has no feed of any kind (checked /feed, /rss.xml and",
+    "Squarespace's ?format=rss — all 404). It is the one site worth opening by",
+    "hand each week; see news/README.md.",
+    "",
+    "The Google News rows are queries, not outlets. They cast the wide net that",
+    "catches a local paper reporting a distillery expansion. Their links point",
+    "at Google's redirector, so those items are flagged needsDirectLink and",
+    "cannot reach an issue until you paste the publisher's own URL.",
+    "",
+    "PR Newswire is the wire the brands themselves file on — the same source the",
+    "bourbon-media skill pulls press photos from — so a release lands here before",
+    "any outlet rewrites it, with the brand's own numbers in it. Read it for what",
+    "it is: a press release is a primary source for what a brand announced and",
+    "what it says a bottle costs. It is not a source for whether that is a good",
+    "price. That verdict is the site's job, not the wire's.",
+    "",
+    "Only the beers-wines-and-spirits and product-recalls categories are worth",
+    "polling. PR Newswire's other category feeds, including food-beverages,",
+    "silently fall back to all-industry news — checked 2026-09-01, and they came",
+    "back full of bank earnings."
+  ],
+  "sources": [
+    {
+      "name": "PR Newswire — Beers, Wines & Spirits",
+      "url": "https://www.prnewswire.com/rss/consumer-products-retail-latest-news/beers-wines-and-spirits-list.rss",
+      "weight": 3
+    },
+    {
+      "name": "PR Newswire — Product Recalls",
+      "url": "https://www.prnewswire.com/rss/consumer-products-retail-latest-news/product-recalls-list.rss",
+      "weight": 2
+    },
+    {
+      "name": "Whisky Advocate",
+      "url": "https://whiskyadvocate.com/call/blogs/rss/",
+      "weight": 3
+    },
+    {
+      "name": "The Whiskey Wash",
+      "url": "https://thewhiskeywash.com/feed/",
+      "weight": 3
+    },
+    {
+      "name": "Bourbon Banter",
+      "url": "https://bourbonbanter.com/feed/",
+      "weight": 2
+    },
+    {
+      "name": "Whiskey Raiders",
+      "url": "https://www.whiskeyraiders.com/feed/",
+      "weight": 2
+    },
+    {
+      "name": "Drinkhacker",
+      "url": "https://drinkhacker.com/feed/",
+      "weight": 2
+    },
+    {
+      "name": "Kentucky Bourbon Trail",
+      "url": "https://kybourbontrail.com/feed/",
+      "weight": 2
+    },
+    {
+      "name": "VinePair",
+      "url": "https://vinepair.com/feed/",
+      "weight": 1
+    },
+    {
+      "name": "Robb Report — Spirits",
+      "url": "https://robbreport.com/food-drink/spirits/feed/",
+      "weight": 1
+    },
+    {
+      "name": "r/bourbon",
+      "url": "https://www.reddit.com/r/bourbon/new/.rss",
+      "weight": 1
+    },
+    {
+      "name": "Google News — bourbon pricing",
+      "url": "https://news.google.com/rss/search?q=%22bourbon%22+(allocation+OR+MSRP+OR+%22price+increase%22)&hl=en-US&gl=US&ceid=US:en",
+      "weight": 1
+    },
+    {
+      "name": "Google News — Kentucky distilleries",
+      "url": "https://news.google.com/rss/search?q=Kentucky+distillery+bourbon&hl=en-US&gl=US&ceid=US:en",
+      "weight": 1
+    }
+  ]
+}

@@ -18,7 +18,7 @@
  */
 const SIGNUP_SOURCES = [
   "landing_hero",
-  "landing_weekly_pour",
+  "landing_proof_and_perspective",
   "find_my_next_pour",
   "footer",
 ] as const;

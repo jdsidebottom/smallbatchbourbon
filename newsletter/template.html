@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Proof &amp; Perspective — Issue {{ISSUE_NO}}</title>
+<!--[if mso]>
+<xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+<![endif]-->
+<!-- Web fonts load in Apple Mail and a few others; every rule below carries a
+     fallback stack, because Outlook and most mobile clients ignore this. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Oswald:wght@500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+  table,td{mso-table-lspace:0pt;mso-table-rspace:0pt}
+  img{-ms-interpolation-mode:bicubic;border:0;outline:none;text-decoration:none;display:block}
+  body{margin:0!important;padding:0!important;width:100%!important}
+
+  /* Body links use Amber Deep, not Bourbon Amber. See newsletter/README.md,
+     "Palette, and where the brand amber cannot go". */
+  a{color:#9A5528}
+
+  /* Force light rendering. Warm Ivory is the brand's editorial light ground;
+     email clients auto-invert dark grounds with no reliable opt-out. */
+  :root{color-scheme:light;supported-color-schemes:light}
+  @media (prefers-color-scheme:dark){
+    .sbb-card{background:#F4EFE5!important}
+    .sbb-body-text,.sbb-body-text *{color:#0E0E0E!important}
+    .sbb-muted,.sbb-muted *{color:#686B6B!important}
+  }
+  [data-ogsc] .sbb-card{background:#F4EFE5!important}
+  [data-ogsc] .sbb-body-text,[data-ogsc] .sbb-body-text *{color:#0E0E0E!important}
+
+  @media screen and (max-width:620px){
+    .sbb-pad{padding-left:22px!important;padding-right:22px!important}
+    .sbb-h1{font-size:26px!important;line-height:33px!important}
+    .sbb-price-cell{font-size:15px!important}
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#E7E1D5;">
+
+<!-- Preview text: WRITE THIS EVERY ISSUE. It is a second subject line. 60-90 chars. -->
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
+  {{PREVIEW_TEXT}}
+  &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#E7E1D5;">
+<tr><td align="center" style="padding:24px 12px;">
+
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+<table role="presentation" class="sbb-card" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#F4EFE5;border-radius:4px;overflow:hidden;">
+
+  <!-- ============ MASTHEAD ============
+       The logo is the wordmark. Do not set "Proof & Perspective" as live text —
+       the identity is a locked lockup (Cormorant Light compressed 8% + Oswald Bold).
+       {{LOGO_URL}} MUST be an absolute https URL before sending. Upload
+       assets/pp-signature-glass-dark-512.png to Beehiiv and paste its URL. -->
+  <tr>
+    <td align="center" style="background-color:#0E0E0E;padding:32px 30px 26px;">
+      <img src="{{LOGO_URL}}" width="260" height="67" alt="Proof &amp; Perspective"
+           style="display:block;width:260px;max-width:260px;height:auto;margin:0 auto;">
+      <div style="font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:500;line-height:16px;letter-spacing:.18em;text-transform:uppercase;color:#8E9190;padding-top:16px;">
+        Issue {{ISSUE_NO}} &nbsp;&middot;&nbsp; {{ISSUE_DATE}}
+      </div>
+    </td>
+  </tr>
+  <tr><td style="height:3px;background-color:#B0642E;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+  <!-- ============ AFFILIATE DISCLOSURE (top of issue, per FTC) ============ -->
+  <tr>
+    <td class="sbb-pad sbb-muted" style="padding:14px 40px;background-color:#EDE6D9;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#686B6B;">
+      {{DISCLOSURE_LINE}}
+    </td>
+  </tr>
+
+  <!-- ============ THE POUR ============ -->
+  <tr>
+    <td class="sbb-pad sbb-body-text" style="padding:32px 40px 8px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;line-height:28px;color:#0E0E0E;">
+      <p style="margin:0 0 16px;"><span style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0E0E0E;">{{DATELINE}} &mdash;</span> {{POUR_PARAGRAPH}}</p>
+    </td>
+  </tr>
+
+  <!-- ============ PROOF ============
+       Section label set in Cormorant Garamond Light, mirroring the wordmark's
+       "PROOF" half. -->
+  <tr>
+    <td class="sbb-pad" style="padding:22px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:26px;line-height:30px;letter-spacing:.14em;text-transform:uppercase;color:#0E0E0E;font-weight:300;padding-bottom:8px;">Proof</td></tr>
+        <tr><td style="height:2px;background-color:#B0642E;font-size:0;line-height:0;">&nbsp;</td></tr>
+        <tr><td class="sbb-muted" style="font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#686B6B;padding-top:8px;">What actually happened this week. Every line is sourced.</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="sbb-pad sbb-body-text" style="padding:16px 40px 0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#0E0E0E;">
+      <!-- REPEAT this table 3-5x. Each item = one claim, one consequence, one source link. -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td width="18" valign="top" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#B0642E;font-weight:700;">&bull;</td>
+          <td valign="top" style="padding-bottom:14px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#0E0E0E;">
+            <strong style="color:#0E0E0E;">{{PROOF_1_LEAD}}</strong> {{PROOF_1_BODY}}
+            <a href="{{PROOF_1_URL}}" style="color:#9A5528;text-decoration:underline;">{{PROOF_1_SOURCE}}</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ============ PERSPECTIVE ============
+       Section label set in Oswald Bold, mirroring the wordmark's other half. -->
+  <tr>
+    <td class="sbb-pad" style="padding:26px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;letter-spacing:.1em;text-transform:uppercase;color:#0E0E0E;font-weight:700;padding-bottom:8px;">Perspective</td></tr>
+        <tr><td style="height:2px;background-color:#B0642E;font-size:0;line-height:0;">&nbsp;</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="sbb-pad sbb-body-text" style="padding:20px 40px 0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;line-height:29px;color:#0E0E0E;">
+      <h2 class="sbb-h1" style="margin:0 0 16px;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:32px;line-height:39px;font-weight:600;color:#0E0E0E;">{{PERSPECTIVE_HEADLINE}}</h2>
+      {{PERSPECTIVE_BODY}}
+    </td>
+  </tr>
+
+  <!-- ============ WHAT WE'D PAY ============
+       Generate this block instead of filling it in by hand:
+         node newsletter/build-wwp.mjs 002
+       Edit newsletter/issues/002.wwp.json to override any field. -->
+  <tr>
+    <td class="sbb-pad" style="padding:30px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0E0E0E;border-radius:4px;">
+        <tr>
+          <td style="padding:24px 26px 18px;">
+            <div style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:#8E9190;padding-bottom:10px;">What We&rsquo;d Pay</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:26px;line-height:32px;color:#F4EFE5;font-weight:600;">{{WWP_BOTTLE}}</div>
+            <div style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#8E9190;padding-top:4px;">{{WWP_SUBLINE}}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 26px 6px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td class="sbb-price-cell" width="50%" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#8E9190;padding:12px 0 4px;border-top:1px solid #2A2A2A;">MSRP</td>
+                <td class="sbb-price-cell" width="50%" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#8E9190;padding:12px 0 4px;border-top:1px solid #2A2A2A;">We&rsquo;d pay up to</td>
+              </tr>
+              <tr>
+                <td class="sbb-price-cell" valign="top" style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-size:26px;line-height:32px;color:#F4EFE5;font-weight:700;padding-bottom:4px;">{{WWP_MSRP}}</td>
+                <td class="sbb-price-cell" valign="top" style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-size:26px;line-height:32px;color:#B0642E;font-weight:700;padding-bottom:4px;">{{WWP_OURS}}</td>
+              </tr>
+              <tr>
+                <td class="sbb-price-cell" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:11px;line-height:17px;color:#8E9190;padding-bottom:14px;">{{WWP_MSRP_NOTE}}</td>
+                <td class="sbb-price-cell" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:11px;line-height:17px;color:#8E9190;padding-bottom:14px;">top of our Buy band</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 26px 4px;">
+            <div style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:12px;line-height:20px;color:#8E9190;border-top:1px solid #2A2A2A;padding-top:12px;">{{WWP_LADDER}}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 26px 24px;">
+            <div style="font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:25px;color:#D8D3C9;">{{WWP_REASONING}}</div>
+            <div style="padding-top:14px;"><a href="{{WWP_URL}}" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:14px;color:#F4EFE5;text-decoration:underline;">See the full breakdown &rarr;</a></div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ============ THE SHELF REPORT ============ -->
+  <tr>
+    <td class="sbb-pad" style="padding:30px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="font-family:Oswald,'Arial Narrow',Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;letter-spacing:.1em;text-transform:uppercase;color:#0E0E0E;font-weight:700;padding-bottom:8px;">The Shelf Report</td></tr>
+        <tr><td style="height:2px;background-color:#B0642E;font-size:0;line-height:0;">&nbsp;</td></tr>
+        <tr><td class="sbb-muted" style="font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#686B6B;padding-top:8px;">What readers paid, and where. Reply to this email to add yours.</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="sbb-pad sbb-body-text" style="padding:14px 40px 0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:25px;color:#0E0E0E;">
+      <!-- REPEAT 4-6x: bottle — price — store/city — reader first name -->
+      <div style="padding:7px 0;border-bottom:1px solid #DCD5C7;">
+        <strong style="color:#0E0E0E;">{{SHELF_1_BOTTLE}}</strong> &mdash; {{SHELF_1_PRICE}} &middot; <span class="sbb-muted" style="color:#686B6B;">{{SHELF_1_PLACE}} &middot; via {{SHELF_1_READER}}</span>
+      </div>
+    </td>
+  </tr>
+
+  <!-- ============ THE ONE ASK — exactly one CTA per issue ============ -->
+  <tr>
+    <td class="sbb-pad" align="center" style="padding:34px 40px 0;">
+      <p class="sbb-body-text" style="margin:0 0 18px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#0E0E0E;text-align:center;">{{CTA_LEAD}}</p>
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{CTA_URL}}" style="height:46px;v-text-anchor:middle;width:280px;" arcsize="9%" stroke="f" fillcolor="#9A5528">
+        <w:anchorlock/><center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">{{CTA_LABEL}}</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-- -->
+      <a href="{{CTA_URL}}" style="display:inline-block;background-color:#9A5528;color:#FFFFFF;font-family:Inter,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;line-height:46px;text-align:center;text-decoration:none;width:280px;border-radius:4px;">{{CTA_LABEL}}</a>
+      <!--<![endif]-->
+    </td>
+  </tr>
+
+  <!-- ============ SIGN-OFF ============ -->
+  <tr>
+    <td class="sbb-pad sbb-body-text" style="padding:32px 40px 0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#0E0E0E;">
+      <p style="margin:0;">{{SIGNOFF}}</p>
+      <p style="margin:14px 0 0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:20px;color:#0E0E0E;">{{SIGNATURE}}</p>
+    </td>
+  </tr>
+
+  <!-- ============ FOOTER ============ -->
+  <tr><td style="padding:30px 40px 0;"><div style="height:1px;background-color:#DCD5C7;font-size:0;line-height:0;">&nbsp;</div></td></tr>
+  <tr>
+    <td class="sbb-pad" style="padding:20px 40px 34px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:19px;color:#686B6B;">
+      <p style="margin:0 0 10px;font-family:Inter,Helvetica,Arial,sans-serif;font-weight:500;color:#0E0E0E;letter-spacing:.14em;text-transform:uppercase;">21+ only. Please drink responsibly.</p>
+      <p style="margin:0 0 10px;">Prices and availability are what we observed on the dates noted and change constantly. Nothing here is an offer to sell alcohol, or advice on shipping laws in your state.</p>
+      <p style="margin:0 0 10px;font-family:Inter,Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#686B6B;">Drink Smarter. Ignore the Noise.</p>
+      <p style="margin:0 0 10px;"><a href="{{SITE_URL}}" style="color:#9A5528;">smallbatchbourbon.com</a></p>
+      <p style="margin:0;">{{MAILING_ADDRESS}}<br>
+        <a href="{{UNSUBSCRIBE_URL}}" style="color:#686B6B;text-decoration:underline;">Unsubscribe</a> &nbsp;&middot;&nbsp;
+        <a href="{{PREFERENCES_URL}}" style="color:#686B6B;text-decoration:underline;">Update preferences</a>
+      </p>
+    </td>
+  </tr>
+
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+</body>
+</html>

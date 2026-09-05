@@ -235,10 +235,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* The Weekly Pour — primary conversion block */}
-      <section id="weekly-pour" className="scroll-mt-20 border-b border-ink-line">
+      {/* Proof and Perspective — primary conversion block */}
+      <section id="proof-and-perspective" className="scroll-mt-20 border-b border-ink-line">
         <div className="mx-auto max-w-3xl px-5 py-20 text-center sm:py-28">
-          <p className="eyebrow">The Weekly Pour</p>
+          <p className="eyebrow">Proof and Perspective</p>
           <h2 className="mt-4 text-4xl leading-tight text-cream sm:text-5xl">
             One useful bourbon email. Once a week.
           </h2>
@@ -249,7 +249,7 @@ export default function HomePage() {
           </p>
 
           <div className="mx-auto mt-9 max-w-xl text-left">
-            <NewsletterForm source="landing_weekly_pour" />
+            <NewsletterForm source="landing_proof_and_perspective" />
           </div>
         </div>
       </section>

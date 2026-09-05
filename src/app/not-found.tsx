@@ -16,7 +16,7 @@ export default function NotFound() {
         {[
           { label: "Home", href: "/" },
           { label: "What We'd Pay", href: "/#what-wed-pay" },
-          { label: "The Weekly Pour", href: "/#weekly-pour" },
+          { label: "Proof and Perspective", href: "/#proof-and-perspective" },
           { label: "About", href: "/about" },
           { label: "Contact", href: "/contact" },
         ].map((link) => (

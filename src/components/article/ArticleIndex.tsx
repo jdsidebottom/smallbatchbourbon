@@ -27,8 +27,8 @@ export function ArticleIndex({
           <p className="text-cream-dim">{copy.empty}</p>
           <p className="mt-3 text-sm text-cream-muted">
             We&apos;d rather publish nothing than pad this page out.{" "}
-            <Link href="/#weekly-pour" className="text-amber underline underline-offset-4">
-              Get The Weekly Pour
+            <Link href="/#proof-and-perspective" className="text-amber underline underline-offset-4">
+              Get Proof and Perspective
             </Link>{" "}
             and you&apos;ll hear when the first ones land.
           </p>
