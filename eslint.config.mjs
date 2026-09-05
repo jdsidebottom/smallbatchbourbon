@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+
+    // Vendored third-party agent skills. Not ours, not shipped, and
+    // .claude/skills is a junction onto the same files as .agents.
+    ".agents/**",
+    ".claude/skills/**",
   ]),
 ]);
 
