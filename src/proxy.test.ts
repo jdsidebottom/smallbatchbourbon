@@ -6,15 +6,25 @@ const user = vi.hoisted(() => ({ current: null as { id: string } | null }));
 
 vi.mock("@supabase/ssr", () => ({
   createServerClient: (_url: string, _key: string, options: {
-    cookies: { setAll: (c: { name: string; value: string; options?: object }[]) => void };
+    cookies: {
+      setAll: (
+        c: { name: string; value: string; options?: object }[],
+        headers: Record<string, string>,
+      ) => void;
+    };
   }) => ({
     auth: {
       // Supabase writes refreshed tokens through `setAll` during getUser().
       getUser: async () => {
         if (setAllOnRefresh.current) {
-          options.cookies.setAll([
-            { name: "sb-access-token", value: "refreshed", options: { path: "/" } },
-          ]);
+          options.cookies.setAll(
+            [{ name: "sb-access-token", value: "refreshed", options: { path: "/" } }],
+            {
+              "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+              Expires: "0",
+              Pragma: "no-cache",
+            },
+          );
         }
         return { data: { user: user.current } };
       },
@@ -42,6 +52,10 @@ describe("proxy", () => {
     // Without this the browser keeps a refresh token the server has already
     // rotated away, and bounces straight back to the login page.
     expect(response.cookies.get("sb-access-token")?.value).toBe("refreshed");
+    // A cached redirect that carries someone's session cookie would hand that
+    // session to the next visitor.
+    expect(response.headers.get("Cache-Control")).toContain("no-store");
+    expect(response.headers.get("Pragma")).toBe("no-cache");
   });
 
   it("carries cookies through the redirect that turns anonymous visitors away", async () => {

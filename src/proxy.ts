@@ -24,9 +24,13 @@ export async function proxy(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, headers) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
+        // The library hands us Cache-Control, Expires and Pragma here. A response
+        // that sets an auth cookie must never be cached by a CDN or reverse proxy,
+        // or one visitor's session token gets served to another.
+        Object.entries(headers).forEach(([name, value]) => response.headers.set(name, value));
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options),
         );
@@ -74,6 +78,11 @@ export async function proxy(request: NextRequest) {
 function redirectCarryingSession(url: URL, source: NextResponse) {
   const redirect = NextResponse.redirect(url);
   source.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  // The no-store headers have to travel with the cookies they protect.
+  for (const name of ["Cache-Control", "Expires", "Pragma"]) {
+    const value = source.headers.get(name);
+    if (value !== null) redirect.headers.set(name, value);
+  }
   return redirect;
 }
 
