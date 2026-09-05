@@ -117,7 +117,10 @@ export async function getPublishedBottle(slug: string): Promise<PublicBottle | n
     .eq("slug", slug)
     .maybeSingle();
 
-  if (error || !data) return null;
+  // A failed query is not a missing bottle. Returning null for both would let a
+  // transient outage cache itself as a permanent 404.
+  if (error) throw error;
+  if (!data) return null;
 
   const record = data as Record<string, unknown>;
 
@@ -143,7 +146,7 @@ async function getAlternatives(bottleId: string): Promise<PublicBottle["alternat
 
   // RLS requires both ends of the relationship to be published, so an
   // alternative pointing at a draft simply does not come back.
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("bottle_relationships")
     .select(
       `relationship_type, rank, note,
@@ -156,6 +159,8 @@ async function getAlternatives(bottleId: string): Promise<PublicBottle["alternat
     .eq("source_bottle_id", bottleId)
     .order("rank")
     .limit(6);
+
+  if (error) throw error;
 
   return (data ?? [])
     .map((row) => {
@@ -182,10 +187,12 @@ async function getRetailers(bottleId: string): Promise<PublicBottle["retailers"]
   if (!supabase) return [];
 
   // destination_url is intentionally not selected — the public role cannot read it.
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("bottle_retailers")
     .select("id, retailers ( name, slug, disclosure_note )")
     .eq("bottle_id", bottleId);
+
+  if (error) throw error;
 
   return (data ?? [])
     .map((row) => {
@@ -202,7 +209,7 @@ export async function listPublishedBottles(): Promise<PublicBottleSummary[]> {
   const supabase = createPublicClient();
   if (!supabase) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("bottles")
     .select(
       `id, slug, name, classification, proof, image_path, image_alt,
@@ -210,6 +217,8 @@ export async function listPublishedBottles(): Promise<PublicBottleSummary[]> {
        bottle_prices ( msrp_cents, steal_max_cents, buy_max_cents, fair_max_cents, maybe_max_cents, editorial_note )`,
     )
     .order("name");
+
+  if (error) throw error;
 
   return (data ?? []).map((row) => {
     const record = row as Record<string, unknown>;
@@ -225,7 +234,9 @@ export async function listPublishedSlugs(): Promise<{ slug: string; updated_at: 
   const supabase = createPublicClient();
   if (!supabase) return [];
 
-  const { data } = await supabase.from("bottles").select("slug, updated_at");
+  const { data, error } = await supabase.from("bottles").select("slug, updated_at");
+  if (error) throw error;
+
   return (data ?? []) as { slug: string; updated_at: string }[];
 }
 
@@ -255,24 +266,32 @@ export async function searchBottles(query: string, limit = 8): Promise<PublicBot
       } as PublicBottleSummary;
     });
 
-  const terms = trimmed.split(/\s+/).filter(Boolean);
-  const prefixQuery = terms.map((term) => `${term.replace(/[^\w]/g, "")}:*`).join(" & ");
+  // Strip punctuation before discarding empties: a term of "--" would otherwise
+  // survive as ":*" and make the whole tsquery invalid.
+  const terms = trimmed
+    .split(/\s+/)
+    .map((term) => term.replace(/[^\w]/g, ""))
+    .filter(Boolean);
+  const prefixQuery = terms.map((term) => `${term}:*`).join(" & ");
 
   if (prefixQuery) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("bottles")
       .select(columns)
       .textSearch("search_vector", prefixQuery, { config: "english" })
       .limit(limit);
 
+    if (error) throw error;
     if (data && data.length > 0) return shape(data);
   }
 
-  const { data: fuzzy } = await supabase
+  const { data: fuzzy, error: fuzzyError } = await supabase
     .from("bottles")
     .select(columns)
     .ilike("name", `%${trimmed}%`)
     .limit(limit);
+
+  if (fuzzyError) throw fuzzyError;
 
   return shape(fuzzy ?? []);
 }
