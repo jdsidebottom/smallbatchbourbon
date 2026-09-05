@@ -47,3 +47,6 @@ next-env.d.ts
 
 # vendored agent skills reachable via the .claude/skills junction
 .claude/skills/
+
+# personal, machine-local Claude Code settings
+.claude/settings.local.json
