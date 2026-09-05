@@ -64,6 +64,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Bottle images are capped at 5 MiB (MAX_IMAGE_BYTES, and migration 0004 on
+  // the bucket). Server Actions default to a 1 MB request body, which rejected
+  // a valid 2 MB upload before uploadBottleImage could return its own message.
+  // The headroom is for multipart overhead; the 5 MiB check still does the
+  // enforcing.
+  experimental: {
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
