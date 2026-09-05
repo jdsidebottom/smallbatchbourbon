@@ -203,8 +203,11 @@ non-production database.
    been invented or licensed.
 6. **CSP hardening.** Move to nonce- or hash-based `script-src` when the app takes
    on dynamic rendering.
-7. **Rate limiting** is in-process. Move to a shared store before running on more
-   than one instance.
+7. **Rate limiting** is in-process and stays that way. The public write endpoint
+   is rate limited at the Cloudflare edge instead — decided 2026-09-05, see
+   `docs/newsletter-setup.md` §5. A shared store such as Upstash would solve the
+   same problem one layer later, for a dependency and a round trip per signup.
+   The in-process counter remains as a cheap first pass, not as protection.
 8. **Backup and restore** procedure needs documenting before material production
    editorial data accumulates (M6).
 9. **Supabase advisor warnings.** `pg_trgm` is installed in the `public` schema,

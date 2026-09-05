@@ -78,11 +78,44 @@ request may hit a fresh instance with an empty counter, so it degrades to
 almost nothing. The honeypot still catches naive bots; neither stops someone
 generating unique addresses.
 
-- [ ] Pick one: a Cloudflare firewall rate-limit rule on `/api/newsletter`
-      (no code), Cloudflare Turnstile on the form, or move the counter to a
-      shared store such as Upstash.
-- [ ] Turning on double opt-in in step 1 substantially reduces the damage a
-      successful flood can do.
+**Decided 2026-09-05: a Cloudflare rate-limiting rule, plus double opt-in.**
+Not Upstash, and not Turnstile for now.
+
+The domain is already proxied through Cloudflare — `cf-cache-status: DYNAMIC`
+on the live site, so HTML passes through to Vercel and only the edge sees the
+request first. A rule therefore blocks a flood before it reaches your compute,
+costs nothing on the free plan, and needs no code. An Upstash counter would
+solve the same problem one layer later while adding a dependency and a network
+round trip to every signup, so the two are alternatives, not partners.
+
+Turnstile is a different axis — it asks whether the visitor is a person, which
+no rate limit can answer — but it puts a challenge in front of real readers.
+Hold it in reserve for actual observed abuse rather than paying that cost for a
+list that does not exist yet.
+
+- [ ] **Cloudflare → Security → WAF → Rate limiting rules → Create rule.**
+      Match `URI Path equals /api/newsletter`. Set the threshold to mirror the
+      in-process limiter — 5 requests per minute per IP — or the nearest period
+      the plan offers. Action: Block. Counting is per IP on the free plan, which
+      is what you want here.
+- [ ] **Beehiiv → double opt-in on.** It costs some raw signup numbers and buys
+      a list that opens. It is also the only thing on this page that limits the
+      damage of a flood that gets through: an address that never confirms never
+      becomes a subscriber.
+- [ ] Leave the in-process counter in `src/app/api/newsletter/route.ts` alone.
+      It is nearly free and catches trivial same-instance bursts. Do not count
+      it as protection — on serverless each request may land on a fresh
+      instance with an empty map.
+
+### What double opt-in changes in the app
+
+Nothing structural, but the copy has to match. `NewsletterForm`'s default
+success message already says "Check your inbox to confirm." The Find My Next
+Pour block on the home page overrode it with "You're on the early-access list",
+which stops being true the moment double opt-in is on — that person is not on
+any list until they click the link. Fixed alongside this note.
+
+If you ever turn double opt-in **off**, both messages need revisiting.
 
 What it costs you if you skip this: a list padded with fake addresses, a
 collapsing open rate, and — if enough of them bounce — worse deliverability for
