@@ -282,7 +282,7 @@ export default function HomePage() {
                 <NewsletterForm
                   source="find_my_next_pour"
                   cta="Notify me"
-                  successMessage="You're on the early-access list."
+                  successMessage="Almost there — check your inbox to confirm."
                 />
               </div>
             </div>
