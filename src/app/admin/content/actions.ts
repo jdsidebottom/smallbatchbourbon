@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidatePublicContent } from "@/lib/data/revalidate-public";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
@@ -42,6 +43,9 @@ const uuid = z.string().uuid();
  * the article's own public route, and the index it appears in.
  */
 function revalidateArticle(id: string, type: ArticleType, slug: string) {
+  // A guide's membership decides what renders on the bottle pages it features,
+  // so an article write is a bottle-page write too.
+  revalidatePublicContent();
   revalidatePath("/admin/content");
   revalidatePath(`/admin/content/${id}`);
   revalidatePath(articlePath(type, slug));
