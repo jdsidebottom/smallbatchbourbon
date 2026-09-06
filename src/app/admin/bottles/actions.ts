@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidatePublicContent } from "@/lib/data/revalidate-public";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
@@ -112,6 +113,7 @@ export async function saveBottle(
     const { error } = await supabase.from("bottles").update(row).eq("id", bottleId);
     if (error) return fail(friendly(error.message));
     revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
     revalidatePath("/admin/bottles");
     return ok("Saved.");
   }
@@ -205,6 +207,7 @@ export async function uploadBottleImage(
   }
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   revalidatePath(`/bourbon/${bottle.slug}`);
   return ok("Image uploaded.");
 }
@@ -235,6 +238,7 @@ export async function removeBottleImage(bottleId: string): Promise<ActionResult>
   }
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   revalidatePath(`/bourbon/${bottle.slug}`);
   return ok("Image removed.");
 }
@@ -286,6 +290,7 @@ export async function savePriceLadder(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Value thresholds saved.");
 }
 
@@ -335,6 +340,7 @@ export async function saveReview(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Review saved.");
 }
 
@@ -365,6 +371,7 @@ export async function saveTastingProfile(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Flavour profile saved.");
 }
 
@@ -477,6 +484,7 @@ export async function addAlternative(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Alternative added.");
 }
 
@@ -489,6 +497,7 @@ export async function deleteAlternative(bottleId: string, relationshipId: string
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Alternative removed.");
 }
 
@@ -527,6 +536,7 @@ export async function addRetailerDestination(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Retailer destination added.");
 }
 
@@ -542,6 +552,7 @@ export async function deleteRetailerDestination(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   return ok("Destination removed.");
 }
 
@@ -581,6 +592,7 @@ export async function setPublicationStatus(
   if (error) return fail(friendly(error.message));
 
   revalidatePath(`/admin/bottles/${bottleId}`);
+  revalidatePublicContent();
   revalidatePath("/admin/bottles");
   return ok(status === "published" ? "Published." : `Moved to ${status}.`);
 }
