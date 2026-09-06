@@ -201,6 +201,12 @@ export async function getBottle(id: string): Promise<BottleDetail | null> {
       .order("verified_at", { ascending: false }),
   ]);
 
+  // A subordinate read that failed would otherwise reach the editor as an empty
+  // field, indistinguishable from one nobody has filled in yet.
+  for (const result of [brand, price, review, tasting, alternatives, retailers, sources]) {
+    if (result.error) throw result.error;
+  }
+
   const completeness = scoreCompleteness({
     bottle: toBottleCompleteness(bottle as BottleRow),
     price: price.data ? toPriceCompleteness(price.data) : null,

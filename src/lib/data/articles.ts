@@ -180,6 +180,11 @@ export async function getArticle(id: string): Promise<ArticleDetail | null> {
       .order("verified_at", { ascending: false }),
   ]);
 
+  // Same reason as getBottle: a failed read must not render as absent content.
+  for (const result of [items, sources]) {
+    if (result.error) throw result.error;
+  }
+
   const shaped: GuideItemRow[] = (items.data ?? []).map((row) => {
     const record = row as Record<string, unknown>;
     const bottle = firstOrNull(record.bottle);

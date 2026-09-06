@@ -77,7 +77,10 @@ export async function getPublishedArticle(
     .eq("article_type", type)
     .maybeSingle();
 
-  if (error || !data) return null;
+  // A failed query is not a missing article; conflating them lets an outage
+  // cache itself as a permanent 404.
+  if (error) throw error;
+  if (!data) return null;
 
   const record = data as unknown as PublicArticle;
   return { ...record, picks: await getPicks(record.id) };
@@ -89,11 +92,13 @@ async function getPicks(articleId: string): Promise<GuidePick[]> {
 
   // guide_items.bottle_id is a real foreign key, so PostgREST can embed the
   // bottle directly here — unlike the polymorphic `sources` table.
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("guide_items")
     .select(`id, rank, label, rationale, bottle:bottles ( ${PICK_BOTTLE_COLUMNS} )`)
     .eq("article_id", articleId)
     .order("rank");
+
+  if (error) throw error;
 
   return (data ?? [])
     .map((row) => {
@@ -128,11 +133,13 @@ export async function listPublishedArticles(type: ArticleType): Promise<PublicAr
   const supabase = createPublicClient();
   if (!supabase) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("articles")
     .select("id, slug, title, article_type, excerpt, published_at, reviewed_at, updated_at")
     .eq("article_type", type)
     .order("published_at", { ascending: false });
+
+  if (error) throw error;
 
   return (data ?? []) as unknown as PublicArticleSummary[];
 }
@@ -144,7 +151,9 @@ export async function listPublishedArticleSlugs(): Promise<
   const supabase = createPublicClient();
   if (!supabase) return [];
 
-  const { data } = await supabase.from("articles").select("slug, article_type, updated_at");
+  const { data, error } = await supabase.from("articles").select("slug, article_type, updated_at");
+  if (error) throw error;
+
   return (data ?? []) as unknown as { slug: string; article_type: ArticleType; updated_at: string }[];
 }
 
@@ -159,7 +168,7 @@ export async function getGuidesFeaturingBottle(
   const supabase = createPublicClient();
   if (!supabase) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("guide_items")
     .select(
       `rank, label,
@@ -168,6 +177,8 @@ export async function getGuidesFeaturingBottle(
     .eq("bottle_id", bottleId)
     .order("rank")
     .limit(6);
+
+  if (error) throw error;
 
   return (data ?? [])
     .map((row) => {
