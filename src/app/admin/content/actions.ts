@@ -200,20 +200,23 @@ export async function updateGuideItem(
 
 export async function deleteGuideItem(articleId: string, itemId: string): Promise<ActionResult> {
   const identity = await requireAdmin("contributor");
-  if (!uuid.safeParse(itemId).success) return fail("Unknown pick.");
+  if (!uuid.safeParse(articleId).success || !uuid.safeParse(itemId).success) {
+    return fail("Unknown pick.");
+  }
 
+  // Stamp, delete and renumber in one transaction. Deleting without stamping
+  // recorded the pick's last editor as the deleter, and the renumber that used
+  // to follow was a second request whose failures were swallowed while this
+  // action still reported success.
   const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("guide_items")
-    .delete()
-    .eq("id", itemId)
-    .eq("article_id", articleId);
+  const { error } = await supabase.rpc("delete_guide_item", {
+    p_article_id: articleId,
+    p_item_id: itemId,
+    p_actor: identity.userId,
+  });
 
   if (error) return fail(friendly(error.message));
 
-  // Deleting from the middle leaves a gap in the ranks. Close it, so the
-  // numbering an editor sees always matches the order the guide renders in.
-  await renumber(articleId, identity.userId);
   await revalidateFromId(articleId);
   return ok("Pick removed.");
 }
@@ -256,25 +259,6 @@ export async function moveGuideItem(
 
   await revalidateFromId(articleId);
   return ok("Reordered.");
-}
-
-/** Closes gaps left by a deletion, preserving the current order. */
-async function renumber(articleId: string, actorId: string) {
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("guide_items")
-    .select("id")
-    .eq("article_id", articleId)
-    .order("rank");
-
-  const ids = (data ?? []).map((row) => (row as { id: string }).id);
-  if (ids.length === 0) return;
-
-  await supabase.rpc("reorder_guide_items", {
-    p_article_id: articleId,
-    p_item_ids: ids,
-    p_actor: actorId,
-  });
 }
 
 // -------------------------------------------------------------- sources ----
