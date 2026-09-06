@@ -569,12 +569,30 @@ export async function setPublicationStatus(
   }
 
   const supabase = createAdminClient();
+  const publishedAt = status === "published" ? new Date().toISOString() : null;
+
+  // reviews_public_read (0003) gates a review on its own published_at as well as
+  // its bottle's status, and nothing ever set it — so a review saved through the
+  // admin could never reach a reader. The two now move together: the bottle's
+  // status is the single control over whether its review is visible.
+  //
+  // Done before the bottle, deliberately. If this write succeeds and the next
+  // one fails, the review is still hidden by the bottle's unchanged status; the
+  // other order would leave a published bottle with an invisible review, which
+  // is the bug being fixed here.
+  const { error: reviewError } = await supabase
+    .from("reviews")
+    .update({ published_at: publishedAt })
+    .eq("bottle_id", bottleId);
+
+  if (reviewError) return fail(friendly(reviewError.message));
+
   const { error } = await supabase
     .from("bottles")
     .update({
       status,
       updated_by: identity.userId,
-      published_at: status === "published" ? new Date().toISOString() : null,
+      published_at: publishedAt,
     })
     .eq("id", bottleId);
 
