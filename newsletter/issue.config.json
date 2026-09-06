@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "Values that are the same in every issue. build-issue.mjs fills these so",
+    "they stop being seven things to remember on a Thursday morning.",
+    "",
+    "LOGO_URL must be an absolute https URL. The wordmark is a locked lockup —",
+    "never set 'Proof & Perspective' as live text. Upload",
+    "assets/pp-signature-glass-dark-512.png to Beehiiv and paste its URL here.",
+    "",
+    "MAILING_ADDRESS, UNSUBSCRIBE_URL and PREFERENCES_URL: either put real",
+    "values here, or map them to Beehiiv's merge fields ({{unsubscribe_url}},",
+    "{{preferences_url}}) and let Beehiiv's compliance footer supply the",
+    "address. Do not ship with neither — CAN-SPAM requires a postal address in",
+    "every commercial send. build-issue.mjs refuses to call an issue ready if",
+    "the address is still a placeholder."
+  ],
+
+  "LOGO_URL": "",
+  "SITE_URL": "https://smallbatchbourbon.com",
+  "MAILING_ADDRESS": "",
+  "UNSUBSCRIBE_URL": "{{unsubscribe_url}}",
+  "PREFERENCES_URL": "{{preferences_url}}",
+
+  "SIGNATURE": "&mdash; Small Batch Bourbon",
+
+  "DISCLOSURE_LINE": "Some links below are affiliate links. If you buy through one, we may earn a commission at no cost to you. It never changes a verdict &mdash; our number is set before we look for a link."
+}

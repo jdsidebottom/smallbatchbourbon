@@ -47,14 +47,27 @@ Automations are not on Launch; that is the main reason you would upgrade.
 - [ ] Confirm the subscriber appears in Beehiiv within a few seconds.
 - [ ] Confirm the `signup_source` custom field on that subscriber reads
       `landing_proof_and_perspective`.
-- [ ] Subscribe again with the same address. The form should say you are already
-      subscribed rather than erroring — the API returns 409 and the code handles
-      it deliberately.
-- [ ] **Check whether a welcome email arrives.** The code sends
-      `send_welcome_email: true`, but Beehiiv's built-in welcome email and its
-      automations builder are different features and Launch excludes automations.
-      If nothing arrives and you want one, that is a Scale-tier upgrade. The API
-      will not error either way, so this only shows up if you look.
+- [ ] Subscribe again with the same address. **Note: Beehiiv does not return 409
+      here.** Tested against the live API 2026-09-05 — a repeat signup comes back
+      as success, so the form says "You're in" rather than "You're already on the
+      list", and the `duplicate` branch in `src/lib/newsletter.ts` never fires.
+      Harmless, but it is dead code and this document previously claimed
+      otherwise.
+- [ ] **The welcome email does not currently send.** Tested 2026-09-05: three
+      subscribes with `send_welcome_email: true` produced no email at all, in
+      inbox or spam. Either no welcome email is authored in the publication (a
+      free dashboard fix — the API flag cannot send an email that does not exist)
+      or Launch tier will not send one (a Scale-tier upgrade). The API returns
+      200 either way, so this only shows up if you look.
+- [ ] **Double opt-in confirmation does send, and lands well.** Tested
+      2026-09-05: arrived in 17 seconds, in the inbox rather than spam, from
+      `proofandperspective@mail.beehiiv.com`.
+- [ ] **Consider an authenticated sending domain.** Confirmations currently send
+      from `mail.beehiiv.com`, not from `proofandperspective.com` — a domain you
+      already own and have sent from. A shared provider subdomain is fine at
+      launch, but your own authenticated domain is better for deliverability and
+      is the thing a reader recognises in a From line.
+- [ ] Delete the test subscribers before real content goes in.
 
 ## 4. Wire it up in Vercel
 
@@ -172,7 +185,10 @@ otherwise. PRD §7.2 asks for exactly this.
 
 - [ ] Confirm the unsubscribe link is in the footer of every send. Beehiiv does
       this by default — check rather than assume.
-- [ ] Confirm the postal address renders in a real send.
+- [ ] Confirm the postal address renders in a real send. **The double opt-in
+      confirmation email carries neither**, which is correct — it is transactional,
+      not commercial — so it proves nothing about compliance. These two checks
+      have to be done against an actual issue.
 - [ ] The site's privacy policy already says the email address and signup source
       go to the email provider. If you start collecting anything else, that copy
       needs updating to match.

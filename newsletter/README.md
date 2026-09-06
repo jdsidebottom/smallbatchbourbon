@@ -2,7 +2,13 @@
 
 Weekly email for Small Batch Bourbon. What is here:
 
-- `template.html` — the reusable issue shell, with `{{PLACEHOLDER}}` slots.
+- `build-issue.mjs` — assembles a whole issue. Start here; it drives the
+  other two.
+- `template.html` — the reusable issue shell, with `{{PLACEHOLDER}}` slots and
+  `<!-- BUILD:* -->` markers marking the three generated regions.
+- `issue.config.json` — the seven values identical in every issue.
+- `issues/*.issue.json` — one per issue: the hand-written copy.
+- `welcome-email.html` — the double opt-in welcome, sent once on subscribe.
 - `issue-001-sample.html` — the template filled in, to show voice, length and rhythm.
 - `build-wwp.mjs` — generates the What We'd Pay block from the database, with
   per-field manual override. See below.
@@ -15,6 +21,37 @@ Weekly email for Small Batch Bourbon. What is here:
 > store and reader name in it is fictional placeholder copy, consistent with the
 > PRD rule against inventing bourbon facts, MSRP, verdicts, tasting notes or
 > availability. Do not send it. Do not lift its numbers.
+
+## Building an issue
+
+```
+node newsletter/build-issue.mjs 002 > newsletter/issues/002.html
+```
+
+That runs `news/proof.mjs` and `build-wwp.mjs`, drops both blocks into
+`template.html`, repeats the Shelf Report rows, and fills everything in
+`issue.config.json` and `issues/002.issue.json`. Report to stderr, HTML to
+stdout, same as the other two.
+
+**It exits non-zero until the issue is actually finished.** The report separates
+three things:
+
+| | |
+|---|---|
+| **Compliance** | postal address or Beehiiv footer, absolute `LOGO_URL`, 21+ line, affiliate disclosure |
+| **Not ready** | unwritten `{{WHY_IT_MATTERS_n}}`, any unfilled placeholder, a generator that failed |
+| **Notes** | word count outside 800–1,200, shelf rows outside 4–6 |
+
+A failed generator costs you one block, not the draft — the region is left
+untouched and flagged, so a Supabase outage or an empty news run still gives you
+something to work in. `--skip-wwp` and `--skip-proof` say so deliberately.
+
+Lowercase `{{unsubscribe_url}}`-style tokens are Beehiiv's and are left alone;
+only uppercase ones count as unfilled.
+
+What it will never do is write the consequence lines. The claim and the link
+belong to the source; the consequence is the argument, and generating it would
+be inventing bourbon facts. Same rule as `proof.mjs`.
 
 ## The sourcing rule
 

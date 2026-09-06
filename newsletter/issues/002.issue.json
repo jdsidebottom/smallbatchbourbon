@@ -1,0 +1,46 @@
+{
+  "_comment": [
+    "This issue's hand-written copy. Build it with:",
+    "    node newsletter/build-issue.mjs 002 > newsletter/issues/002.html",
+    "",
+    "What is NOT here, on purpose:",
+    "  - the Proof bullets      generated from the news run by news/proof.mjs",
+    "  - the What We'd Pay card generated from the database by build-wwp.mjs",
+    "  - LOGO_URL, SITE_URL, MAILING_ADDRESS, the disclosure, the signature",
+    "                           they live in issue.config.json and never change",
+    "",
+    "PERSPECTIVE_BODY is an array of paragraphs. Write prose, not markup — each",
+    "entry is wrapped in its own <p>. Inline <a>, <strong> and <em> are fine.",
+    "",
+    "The {{WHY_IT_MATTERS_n}} consequences are NOT set here. They land in the",
+    "generated Proof block, and you write them into the built HTML — one claim,",
+    "one consequence, one source link. build-issue.mjs exits non-zero while any",
+    "is still unwritten, so a half-finished issue cannot be mistaken for a",
+    "ready one.",
+    "",
+    "Every price, proof, age statement, release date and availability claim",
+    "needs a primary source or a dated first-hand sighting. No exceptions."
+  ],
+
+  "ISSUE_NO": "002",
+  "ISSUE_DATE": "Thursday, September 10",
+  "PREVIEW_TEXT": "",
+
+  "DATELINE": "Louisville",
+  "POUR_PARAGRAPH": "",
+
+  "PERSPECTIVE_HEADLINE": "",
+  "PERSPECTIVE_BODY": [
+    ""
+  ],
+
+  "shelf": [
+    { "bottle": "", "price": "", "place": "", "reader": "" }
+  ],
+
+  "CTA_LEAD": "The Shelf Report is only as good as what you send. Bottle, price, store, city &mdash; one line is plenty.",
+  "CTA_LABEL": "Send us a price",
+  "CTA_URL": "mailto:hello@proofandperspective.com?subject=Shelf%20Report",
+
+  "SIGNOFF": ""
+}
